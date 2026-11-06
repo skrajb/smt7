@@ -1,0 +1,476 @@
+/* ============================================================
+   Smartech Typing Tutor — Theme Packs
+   ------------------------------------------------------------
+   Selectable themes (the picker in sidebar.js / themes.js decides which are offered), switched by setting [data-theme] on
+   <html> (see themes.js). Almost every component in styles.css
+   already reads its colors from the --ink / --accent / --gold /
+   --bg / --card / --text / --muted / --border custom properties,
+   so each theme below only needs to redeclare that token layer —
+   buttons, nav, cards, badges and the results table re-theme for
+   free. Only a handful of screens (the typing surfaces, error
+   highlighting) intentionally stay locked to plain white/black —
+   that's the one thing no theme is allowed to touch, since typing
+   accuracy depends on high, unambiguous contrast there.
+
+   "classic" (Ink & Gold) is the original identity already defined
+   in styles.css's base :root, so it has no block here — it's what
+   you get with no [data-theme] attribute at all.
+   ============================================================ */
+
+/* ---------- 1. Silver Steel ---------- */
+:root[data-theme="silver"] {
+  --ink: #2E3338;
+  --ink-700: #3C4247;
+  --ink-600: #464D53;
+  --primary: #2E3338;
+  --primary-light: #3C4247;
+
+  --accent: #4C6478;
+  --accent-dark: #384E60;
+
+  --gold: #93A1AC;         /* platinum accent, reuses the --gold slot everything already reads */
+  --gold-light: #C9D3DC;
+  --gold-soft: #EEF1F3;
+  --gold-dark: #6C7982;
+
+  --bg: #F1F2F4;
+  --card: #ffffff;
+  --text: #262B30;
+  --muted: #6B7480;
+  --border: #DADFE3;
+
+  --shadow-sm: 0 1px 2px rgba(46,51,56,0.05), 0 2px 8px rgba(46,51,56,0.06);
+  --shadow-md: 0 4px 10px rgba(46,51,56,0.06), 0 10px 24px rgba(46,51,56,0.08);
+  --shadow-lg: 0 10px 24px rgba(46,51,56,0.10), 0 24px 48px rgba(46,51,56,0.14);
+
+  --font-heading: 'Trebuchet MS', 'Segoe UI Semibold', 'Segoe UI', sans-serif;
+  --sheen-a: rgba(255,255,255,0.55);
+}
+:root[data-theme="silver"] .sidebar {
+  background: linear-gradient(180deg, #3C4247 0%, #1A1D20 100%);
+}
+:root[data-theme="silver"] .card,
+:root[data-theme="silver"] .popup-inner,
+:root[data-theme="silver"] .welcome-modal {
+  background-image: linear-gradient(135deg, rgba(255,255,255,0.7), rgba(201,211,220,0.18));
+}
+
+/* ---------- 2. Aurora Gradient ---------- */
+:root[data-theme="gradient"] {
+  --ink: #150E29;
+  --ink-700: #1D1440;
+  --ink-600: #241A52;
+  --primary: #150E29;
+  --primary-light: #1D1440;
+
+  --accent: #7C6CF0;
+  --accent-dark: #6353D6;
+
+  --gold: #22D3B4;
+  --gold-light: #5EE8CE;
+  --gold-soft: #E4FBF6;
+  --gold-dark: #17967D;
+
+  --bg: #F5F4FB;
+  --card: #ffffff;
+  --text: #1B1730;
+  --muted: #6C6784;
+  --border: #E6E3F5;
+
+  --shadow-sm: 0 1px 2px rgba(21,14,41,0.05), 0 2px 8px rgba(21,14,41,0.06);
+  --shadow-md: 0 4px 10px rgba(21,14,41,0.06), 0 10px 24px rgba(21,14,41,0.09);
+  --shadow-lg: 0 10px 24px rgba(21,14,41,0.10), 0 24px 48px rgba(21,14,41,0.16);
+
+  --font-heading: 'Century Gothic', 'Segoe UI', sans-serif;
+  --grad-accent: linear-gradient(120deg, #22D3B4, #7C6CF0, #F45FA1);
+  --sheen-a: rgba(124,108,240,0.5);
+}
+:root[data-theme="gradient"] .sidebar {
+  background: linear-gradient(180deg, #1D1440 0%, #0B0718 100%);
+}
+:root[data-theme="gradient"] .primary-btn,
+:root[data-theme="gradient"] .gold-btn,
+:root[data-theme="gradient"] #refresh-btn-2,
+:root[data-theme="gradient"] #practice-another-btn-2 {
+  background: var(--grad-accent);
+  background-size: 200% 200%;
+}
+:root[data-theme="gradient"] .primary-btn:hover,
+:root[data-theme="gradient"] .gold-btn:hover,
+:root[data-theme="gradient"] #refresh-btn-2:hover,
+:root[data-theme="gradient"] #practice-another-btn-2:hover {
+  background-position: 100% 50%;
+}
+:root[data-theme="gradient"] .sidebar ul li a.active-link {
+  background: linear-gradient(120deg, rgba(34,211,180,0.2), rgba(124,108,240,0.26), rgba(244,95,161,0.2));
+  box-shadow: inset 3px 0 0 #7C6CF0;
+}
+:root[data-theme="gradient"] #intro .intro-content h1 {
+  background: var(--grad-accent);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: smartechGradientShift 8s ease-in-out infinite;
+}
+@keyframes smartechGradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ---------- 3. Emerald Reserve ---------- */
+:root[data-theme="emerald"] {
+  --ink: #0B2B22;
+  --ink-700: #123B2E;
+  --ink-600: #184A39;
+  --primary: #0B2B22;
+  --primary-light: #123B2E;
+
+  --accent: #1D9A6C;
+  --accent-dark: #157E56;
+
+  --gold: #C9A227;
+  --gold-light: #E4C465;
+  --gold-soft: #FBF3DC;
+  --gold-dark: #96771E;
+
+  --bg: #F3F7F4;
+  --card: #ffffff;
+  --text: #142A22;
+  --muted: #5B6E64;
+  --border: #DCE6E0;
+
+  --shadow-sm: 0 1px 2px rgba(11,43,34,0.05), 0 2px 8px rgba(11,43,34,0.06);
+  --shadow-md: 0 4px 10px rgba(11,43,34,0.06), 0 10px 24px rgba(11,43,34,0.09);
+  --shadow-lg: 0 10px 24px rgba(11,43,34,0.10), 0 24px 48px rgba(11,43,34,0.15);
+
+  --font-heading: 'Constantia', 'Cambria', Georgia, serif;
+  --sheen-a: rgba(201,162,39,0.42);
+}
+:root[data-theme="emerald"] .sidebar {
+  background: linear-gradient(180deg, #123B2E 0%, #051510 100%);
+}
+
+/* ---------- 4. Royal Maroon ---------- */
+:root[data-theme="maroon"] {
+  --ink: #3B0A14;
+  --ink-700: #4E0F1C;
+  --ink-600: #611526;
+  --primary: #3B0A14;
+  --primary-light: #4E0F1C;
+
+  --accent: #C1414F;
+  --accent-dark: #A02F3C;
+
+  --gold: #C89B3C;
+  --gold-light: #E3BD6C;
+  --gold-soft: #FBF1DD;
+  --gold-dark: #93702B;
+
+  --bg: #FBF5F1;
+  --card: #ffffff;
+  --text: #2B1013;
+  --muted: #7A5C60;
+  --border: #EBD9D3;
+
+  --shadow-sm: 0 1px 2px rgba(59,10,20,0.05), 0 2px 8px rgba(59,10,20,0.06);
+  --shadow-md: 0 4px 10px rgba(59,10,20,0.06), 0 10px 24px rgba(59,10,20,0.09);
+  --shadow-lg: 0 10px 24px rgba(59,10,20,0.10), 0 24px 48px rgba(59,10,20,0.15);
+
+  --font-heading: 'Bookman Old Style', Garamond, Georgia, serif;
+  --sheen-a: rgba(200,155,60,0.42);
+}
+:root[data-theme="maroon"] .sidebar {
+  background: linear-gradient(180deg, #4E0F1C 0%, #1C0509 100%);
+}
+
+/* ---------- 5. Pearl Ivory (light) ---------- */
+:root[data-theme="pearl"] {
+  --ink: #2B2A28;
+  --ink-700: #3A3936;
+  --ink-600: #47453F;
+  --primary: #2B2A28;
+  --primary-light: #3A3936;
+
+  --accent: #B9833E;
+  --accent-dark: #966A2F;
+
+  --gold: #C9A227;
+  --gold-light: #E4C465;
+  --gold-soft: #FBF3DC;
+  --gold-dark: #96771E;
+
+  --bg: #FAF7F2;
+  --card: #ffffff;
+  --text: #2B2A28;
+  --muted: #837E72;
+  --border: #E8E1D2;
+
+  --shadow-sm: 0 1px 2px rgba(43,42,40,0.05), 0 2px 8px rgba(43,42,40,0.06);
+  --shadow-md: 0 4px 10px rgba(43,42,40,0.06), 0 10px 24px rgba(43,42,40,0.08);
+  --shadow-lg: 0 10px 24px rgba(43,42,40,0.10), 0 24px 48px rgba(43,42,40,0.14);
+
+  --font-heading: 'Constantia', 'Cambria', Georgia, serif;
+  --sheen-a: rgba(185,131,62,0.3);
+
+  /* Light sidebar — the thing that actually makes this theme "lighter",
+     not just a lighter content area */
+  --sidebar-bg: linear-gradient(180deg, #ffffff 0%, #F3EEE3 100%);
+  --sidebar-text: #2B2A28;
+  --sidebar-text-dim: rgba(43,42,40,0.72);
+  --sidebar-text-faint: rgba(43,42,40,0.5);
+  --sidebar-text-faintest: rgba(43,42,40,0.4);
+  --sidebar-border: rgba(43,42,40,0.1);
+  --sidebar-hover-bg: rgba(43,42,40,0.06);
+  --sidebar-card-bg: rgba(43,42,40,0.05);
+  --sidebar-card-border: rgba(43,42,40,0.08);
+}
+
+/* ---------- 6. Sky Breeze (light) ---------- */
+:root[data-theme="sky"] {
+  --ink: #16324A;
+  --ink-700: #1E425F;
+  --ink-600: #275277;
+  --primary: #16324A;
+  --primary-light: #1E425F;
+
+  --accent: #2E8BC0;
+  --accent-dark: #23688F;
+
+  --gold: #D9A62E;
+  --gold-light: #F0C65C;
+  --gold-soft: #FDF3DD;
+  --gold-dark: #A47A1F;
+
+  --bg: #F3F8FC;
+  --card: #ffffff;
+  --text: #152736;
+  --muted: #5F7A8C;
+  --border: #DCEAF2;
+
+  --shadow-sm: 0 1px 2px rgba(21,39,54,0.05), 0 2px 8px rgba(21,39,54,0.06);
+  --shadow-md: 0 4px 10px rgba(21,39,54,0.06), 0 10px 24px rgba(21,39,54,0.08);
+  --shadow-lg: 0 10px 24px rgba(21,39,54,0.10), 0 24px 48px rgba(21,39,54,0.14);
+
+  --font-heading: 'Candara', 'Segoe UI', sans-serif;
+  --sheen-a: rgba(46,139,192,0.3);
+
+  --sidebar-bg: linear-gradient(180deg, #ffffff 0%, #E7F1F8 100%);
+  --sidebar-text: #152736;
+  --sidebar-text-dim: rgba(21,39,54,0.72);
+  --sidebar-text-faint: rgba(21,39,54,0.5);
+  --sidebar-text-faintest: rgba(21,39,54,0.4);
+  --sidebar-border: rgba(21,39,54,0.1);
+  --sidebar-hover-bg: rgba(21,39,54,0.06);
+  --sidebar-card-bg: rgba(21,39,54,0.05);
+  --sidebar-card-border: rgba(21,39,54,0.08);
+}
+
+/* ---------- 7. Mint Fresh (light) ---------- */
+:root[data-theme="mint"] {
+  --ink: #1B5E52;
+  --ink-700: #247062;
+  --ink-600: #2E8272;
+  --primary: #1B5E52;
+  --primary-light: #247062;
+
+  --accent: #13796A;
+  --accent-dark: #0E6054;
+
+  --gold: #F2C14E;
+  --gold-light: #F8DB8E;
+  --gold-soft: #FFF6DC;
+  --gold-dark: #B58414;
+
+  --bg: #F2FAF7;
+  --card: #ffffff;
+  --text: #123B33;
+  --muted: #4A6B62;
+  --border: #D5EAE2;
+
+  --shadow-sm: 0 1px 2px rgba(27,94,82,0.05), 0 2px 8px rgba(27,94,82,0.06);
+  --shadow-md: 0 4px 10px rgba(27,94,82,0.06), 0 10px 24px rgba(27,94,82,0.08);
+  --shadow-lg: 0 10px 24px rgba(27,94,82,0.10), 0 24px 48px rgba(27,94,82,0.13);
+
+  --font-heading: 'Candara', 'Segoe UI', sans-serif;
+  --sheen-a: rgba(19,121,106,0.28);
+
+  /* Light sidebar + light hero (see "Light theme extras" below) */
+  --sidebar-bg: linear-gradient(180deg, #ffffff 0%, #E4F4EE 100%);
+  --sidebar-text: #123B33;
+  --sidebar-text-dim: rgba(18,59,51,0.76);
+  --sidebar-text-faint: rgba(18,59,51,0.58);
+  --sidebar-text-faintest: rgba(18,59,51,0.5);
+  --sidebar-border: rgba(18,59,51,0.10);
+  --sidebar-hover-bg: rgba(19,121,106,0.08);
+  --sidebar-card-bg: rgba(19,121,106,0.07);
+  --sidebar-card-border: rgba(19,121,106,0.14);
+  --sidebar-active-bg: rgba(19,121,106,0.13);
+
+  --hero-bg: linear-gradient(135deg, #DDF3EA 0%, #F6FCF9 52%, #CFEBE0 100%);
+  --hero-glow: rgba(242,193,78,0.30);
+  --hero-title: #123B33;
+  --hero-text: #3F615A;
+  --hero-highlight: #0E6054;
+  --hero-outline: rgba(27,94,82,0.45);
+  --hero-outline-hover: rgba(27,94,82,0.10);
+}
+
+/* ---------- 8. Lavender Mist (light) ---------- */
+:root[data-theme="lavender"] {
+  --ink: #4F4396;
+  --ink-700: #5D50A8;
+  --ink-600: #6B5EB8;
+  --primary: #4F4396;
+  --primary-light: #5D50A8;
+
+  --accent: #6A58D0;
+  --accent-dark: #5444B5;
+
+  --gold: #F0C04F;
+  --gold-light: #F7D98C;
+  --gold-soft: #FFF5DB;
+  --gold-dark: #B3851A;
+
+  --bg: #F6F4FD;
+  --card: #ffffff;
+  --text: #2A2250;
+  --muted: #645C8A;
+  --border: #E3DEF5;
+
+  --shadow-sm: 0 1px 2px rgba(79,67,150,0.05), 0 2px 8px rgba(79,67,150,0.06);
+  --shadow-md: 0 4px 10px rgba(79,67,150,0.06), 0 10px 24px rgba(79,67,150,0.08);
+  --shadow-lg: 0 10px 24px rgba(79,67,150,0.10), 0 24px 48px rgba(79,67,150,0.13);
+
+  --font-heading: 'Candara', 'Segoe UI', sans-serif;
+  --sheen-a: rgba(106,88,208,0.28);
+
+  --sidebar-bg: linear-gradient(180deg, #ffffff 0%, #EBE6FA 100%);
+  --sidebar-text: #2A2250;
+  --sidebar-text-dim: rgba(42,34,80,0.76);
+  --sidebar-text-faint: rgba(42,34,80,0.58);
+  --sidebar-text-faintest: rgba(42,34,80,0.5);
+  --sidebar-border: rgba(42,34,80,0.10);
+  --sidebar-hover-bg: rgba(106,88,208,0.08);
+  --sidebar-card-bg: rgba(106,88,208,0.07);
+  --sidebar-card-border: rgba(106,88,208,0.14);
+  --sidebar-active-bg: rgba(106,88,208,0.13);
+
+  --hero-bg: linear-gradient(135deg, #E8E2FA 0%, #FAF8FF 52%, #DDD5F5 100%);
+  --hero-glow: rgba(240,192,79,0.28);
+  --hero-title: #2A2250;
+  --hero-text: #5A5280;
+  --hero-highlight: #5444B5;
+  --hero-outline: rgba(79,67,150,0.45);
+  --hero-outline-hover: rgba(79,67,150,0.10);
+}
+
+/* ---------- Light theme extras (Mint Fresh, Lavender Mist) ----------
+   Pearl Ivory only lightens the sidebar; these two also lighten the Dashboard
+   hero and soften the sidebar shadow, so the whole app reads light. Buttons,
+   table headers and the menu button stay in the dark --ink colour on purpose
+   (white text on them must remain easy to read). */
+:root[data-theme="mint"] .sidebar,
+:root[data-theme="lavender"] .sidebar { box-shadow: 10px 0 32px rgba(40,50,70,0.12); }
+
+:root[data-theme="mint"] .sidebar ul li a.active-link,
+:root[data-theme="lavender"] .sidebar ul li a.active-link { background: var(--sidebar-active-bg); }
+
+:root[data-theme="mint"] .sidebar ul li a:hover .nav-ico,
+:root[data-theme="mint"] .sidebar ul li a.active-link .nav-ico,
+:root[data-theme="lavender"] .sidebar ul li a:hover .nav-ico,
+:root[data-theme="lavender"] .sidebar ul li a.active-link .nav-ico { color: var(--accent); }
+
+:root[data-theme="mint"] #intro,
+:root[data-theme="lavender"] #intro {
+  background: var(--hero-bg);
+  color: var(--hero-title);
+  border: 1px solid var(--border);
+  border-top: 0;
+}
+:root[data-theme="mint"] #intro::before,
+:root[data-theme="lavender"] #intro::before {
+  background: radial-gradient(ellipse 60% 60% at 85% 15%, var(--hero-glow), transparent 60%);
+}
+:root[data-theme="mint"] .intro-content h1,
+:root[data-theme="lavender"] .intro-content h1 { color: var(--hero-title); }
+:root[data-theme="mint"] .highlight,
+:root[data-theme="lavender"] .highlight { color: var(--hero-highlight); }
+:root[data-theme="mint"] .subtitle,
+:root[data-theme="mint"] .intro-content p,
+:root[data-theme="lavender"] .subtitle,
+:root[data-theme="lavender"] .intro-content p { color: var(--hero-text); }
+:root[data-theme="mint"] .black-btn,
+:root[data-theme="lavender"] .black-btn { background: rgba(255,255,255,0.65); color: var(--ink); border-color: var(--hero-outline); }
+:root[data-theme="mint"] .black-btn:hover,
+:root[data-theme="lavender"] .black-btn:hover { background: var(--hero-outline-hover); }
+:root[data-theme="mint"] .gold-btn,
+:root[data-theme="lavender"] .gold-btn { box-shadow: 0 10px 24px rgba(0,0,0,0.12); }
+:root[data-theme="mint"] .quote-strip,
+:root[data-theme="lavender"] .quote-strip { color: var(--hero-text); border-left-color: var(--gold); }
+/* The hero logo is a white graphic, so on the light hero it sits on a tile in the theme's ink colour */
+:root[data-theme="mint"] .intro-image img,
+:root[data-theme="lavender"] .intro-image img {
+  box-sizing: border-box;
+  padding: 30px 26px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, var(--ink) 0%, var(--ink-600) 100%);
+  box-shadow: var(--shadow-lg);
+  filter: none;
+}
+
+/* ============================================================
+   Shared premium chrome — applies under every theme, using
+   each theme's own --sheen-a / --gold-dark so the effect always
+   matches the current palette. Deliberately a single, one-time
+   moment (plays once on load, doesn't loop) rather than scattered
+   hover animations; prefers-reduced-motion (styles.css) already
+   disables it for anyone who has that setting on.
+   ============================================================ */
+.sidebar-header { position: relative; overflow: hidden; }
+.sidebar-header::after {
+  content: "";
+  position: absolute;
+  top: 0; left: -60%;
+  width: 40%; height: 100%;
+  background: linear-gradient(75deg, transparent, var(--sheen-a, rgba(255,255,255,0.35)), transparent);
+  transform: skewX(-20deg);
+  animation: smartechSheen 2.2s ease-in-out 0.5s 1;
+  pointer-events: none;
+}
+@keyframes smartechSheen {
+  from { left: -60%; }
+  to { left: 130%; }
+}
+
+/* ============================================================
+   Theme picker — small swatch row rendered into the sidebar
+   footer by sidebar.js / themes.js
+   ============================================================ */
+.theme-picker {
+  padding: 14px 18px 6px;
+  border-top: 1px solid var(--sidebar-border);
+}
+.theme-picker-label {
+  font-size: 11px;
+  color: var(--sidebar-text-faintest);
+  margin-bottom: 9px;
+  letter-spacing: 0.02em;
+}
+.theme-swatches { display: flex; gap: 9px; flex-wrap: wrap; }
+.theme-swatch {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--sidebar-border);
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.theme-swatch:hover { transform: translateY(-2px) scale(1.08); }
+.theme-swatch:focus-visible { outline: 2px solid var(--sidebar-text); outline-offset: 2px; }
+.theme-swatch.active-theme {
+  border-color: var(--sidebar-text);
+  box-shadow: 0 0 0 2px var(--sidebar-hover-bg), 0 2px 6px rgba(0,0,0,0.25);
+}

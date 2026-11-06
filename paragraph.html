@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="protect.js"></script>
+	<link rel="icon" type="image/png" href="icon.ico">
+	<style>
+	@media(max-width:768px){
+
+.layout{
+flex-direction:column;
+}
+
+.sidebar{
+width:100%;
+}
+
+}
+.layout{
+display:flex;
+min-height:100vh;
+}
+
+.sidebar{
+width:250px;
+flex-shrink:0;
+}
+
+
+.main{
+flex:1;
+padding:20px;
+
+}
+	.header img {
+    height: 60px;
+}
+.container{
+    width:92%;
+    max-width:1100px;
+    margin:28px auto;
+    padding:30px 32px;
+    background:#FFFAAE;
+    box-shadow:var(--shadow-md);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+}
+.container b {
+    display: block;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin: 18px 0 4px;
+}
+.container b:first-of-type { margin-top: 0; }
+	html, body {
+  height: 100%;
+  margin: 0;
+}
+nav { background: var(--ink); padding: 10px 20px;}
+nav ul { list-style: none; margin: 0; padding: 0; display: flex; align-items: center; }
+nav ul li { margin-right: 20px; }
+nav ul li a, nav ul li button { color: white; font-weight: bold; text-decoration: none; background: transparent; border: none; font-size: 16px; cursor: pointer; }
+nav ul li a:hover, nav ul li button:hover { color: var(--ink); }
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Toggle Button Style */
+.toggle-btn {
+  background:var(--muted);
+  color:white;
+  border:none;
+  border-radius:6px;
+  padding:8px 14px;
+  cursor:pointer;
+  margin-top:10px;
+}
+.toggle-btn.active {
+  background:white;
+}
+
+/* ===== Test Mode: On-Screen / Paper-Based ===== */
+:root {
+  /* Typing area heights - change these two values to resize it */
+  --typing-h-onscreen: 180px;
+  --typing-h-paper: max(260px, calc(100vh - 440px));
+}
+.mode-bar {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px 12px;
+  margin-bottom:12px;
+}
+.mode-bar .toggle-btn { margin-top:0; }
+#mode-toggle:disabled { opacity:.6; cursor:not-allowed; }
+#print-paper-btn { display:none; }
+#paper-note {
+  display:none;
+  margin:0 0 4px;
+  padding:8px 12px;
+  border:1px dashed var(--border, #bbb);
+  border-radius:var(--radius-lg, 10px);
+  color:var(--muted, #555);
+  font-size:13px;
+  line-height:1.4;
+}
+/* Paper mode: reference text stays in the DOM (scoring still uses it) but is not shown */
+body[data-test-mode="paper"] #ref-label,
+body[data-test-mode="paper"] #reference-text { display:none !important; }
+body[data-test-mode="paper"] #paper-note { display:block; }
+body[data-test-mode="paper"] #print-paper-btn { display:inline-block; }
+body.tc-print #print-paper-btn { display:none !important; }   /* Test Centre tests use the Print Exercise button (same sheet as Manage & Print) */
+
+/* Bigger typing text area (much bigger in paper mode, where the reference text is hidden) */
+.test-shell #typing-input {
+  width:100%;
+  box-sizing:border-box;
+  height:var(--typing-h-onscreen);
+  min-height:var(--typing-h-onscreen);
+  resize:vertical;
+}
+body[data-test-mode="paper"] .test-shell #typing-input {
+  height:var(--typing-h-paper);
+  min-height:260px;
+}
+
+/* Printable question paper (only visible while printing) */
+#print-sheet { display:none; }
+@media print {
+  body.printing-paper { display:block !important; background:#fff !important; }
+  body.printing-paper > *:not(#print-sheet) { display:none !important; }
+  body.printing-paper #print-sheet {
+    display:block !important;
+    background:#fff !important;
+    color:#000 !important;
+    padding:8mm 4mm;
+  }
+  #print-sheet .ps-title { font-size:17pt; font-weight:700; margin:0 0 2mm; }
+  #print-sheet .ps-meta { font-size:10.5pt; padding-bottom:3mm; margin-bottom:6mm; border-bottom:1px solid #000; }
+  #print-sheet .ps-fields { display:flex; gap:10mm; margin-bottom:7mm; font-size:11.5pt; }
+  #print-sheet .ps-fields span { flex:1; border-bottom:1px solid #000; padding-bottom:1mm; }
+  #print-sheet .ps-text { font-size:13.5pt; line-height:1.75; white-space:pre-wrap; text-align:justify; }
+}
+</style>
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Long Paragraph Practice | Smartech Typing Tutor</title>
+
+<script src="themes.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="themes.css">
+<link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="testpage.css">
+
+
+
+
+</head>
+
+<body style="font-family:var(--font-body);">
+<div class="layout">
+<script src="profile.js"></script>
+<script src="sidebar.js"></script>
+<div class="main">
+
+<button id="menuToggle">☰</button>
+
+
+<!-- ✅ RESULTS SECTION -->
+<section id="results" style="display:none;">
+
+
+    <!-- RIGHT: Test Results -->
+    <div style="flex:2; min-width:400px;">
+      <h2>Results</h2>
+      <table id="results-table"
+             style="display:none; width:100%; border-collapse:collapse;">
+        <thead><tr><th width="50%">Metric</th><th width="50%">Value</th></tr></thead>
+        <tbody>
+          <tr><td>Exercise</td><td id="exercise-no-value"></td></tr>
+          <tr><td>Test Mode</td><td id="test-mode-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Total Typed Words</td><td id="w-typed-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Wrong Words</td><td id="w-wrong-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Extra Words (typed, not in passage)</td><td id="w-extra-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Skipped Words</td><td id="w-skipped-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Space Errors</td><td id="w-space-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Total Mistakes</td><td id="w-mistakes-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Net Words (Typed &minus; Mistakes)</td><td id="w-net-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Result Speed</td><td id="w-speed-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Required to Pass</td><td id="w-required-value"></td></tr>
+          <tr data-engine="chars"><td>Gross Characters</td><td id="gross-characters-value"></td></tr>
+          <tr data-engine="chars"><td>Wrong Words</td><td id="wrong-words-value"></td></tr>
+          <tr data-engine="chars"><td>Extra Words (typed, not in passage)</td><td id="extra-words-value"></td></tr>
+          <tr data-engine="chars"><td>Skipped Words</td><td id="skipped-words-value"></td></tr>
+          <tr data-engine="chars"><td>Space Errors</td><td id="space-errors-value"></td></tr>
+          <tr data-engine="chars"><td>Error Characters</td><td id="error-characters-value"></td></tr>
+          <tr data-engine="chars"><td>Net Characters</td><td id="net-characters-value"></td></tr>
+          <tr data-engine="chars"><td>Gross Speed</td><td id="gross-speed-value"></td></tr>
+          <tr data-engine="chars"><td>Actual Gross Speed</td><td id="actual-gross-speed-value"></td></tr>
+          <tr><td>Time Taken</td><td id="time-spent-value"></td></tr>
+          <tr><td>Accuracy</td><td id="accuracy-percentage-value"></td></tr>
+          <tr><td>Backspace Count</td><td id="backspace-count-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Result</td><td id="w-result-value"></td></tr>
+
+          <tr id="notes-section" style="display:none;">
+            <td colspan="2">
+              <div id="results-notes" style="display:none;">
+                <div id="exam-note" style="margin-bottom:5px; color:var(--danger);"></div>
+                <div id="pass-note" style="color:var(--accent);"></div>
+              </div>
+            </td>
+          </tr>
+          <tr id="button-row" style="display:none;">
+            <td colspan="2" style="text-align:right;">
+              <button id="refresh-btn-2" class="secondary-btn" type="button">Restart Test</button>
+              <button id="practice-another-btn-2" class="secondary-btn" type="button">New Exercise</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div id="error-section" style="margin-top:15px; display:none;">
+        <div class="tt-legend"><span><i class="lg-ok"></i>Correct</span><span><i class="lg-bad"></i>Wrong / extra word</span><span><i class="lg-fix"></i>Correct word</span><span><i class="lg-skip"></i>Skipped</span></div>
+        <div id="error-highlight"></div>
+      </div>
+      <div id="saved-stats-container" style="margin-top:20px;"></div>
+    </div>
+
+</section>
+<!-- ✅ END RESULTS -->
+
+
+
+
+
+
+<main class="container test-shell" data-state="idle">
+
+<section class="test-section" id="test-section">
+
+<!-- Test Mode button: OFF = On-Screen Test, ON = Paper-Based Test -->
+<div class="mode-bar">
+  <button id="mode-toggle" class="toggle-btn" type="button" aria-pressed="false">
+    <span class="tg-track"><i></i></span><span>Paper-Based Test</span><em class="tg-state">OFF</em>
+  </button>
+  <button id="print-paper-btn" class="secondary-btn" type="button">Print Paper</button>
+</div>
+
+<label for="timerSelect">Select Test Time:</label>
+
+<select id="timerSelect">
+  <option value="600">10 Minutes</option>
+ <option value="900">15 Minutes</option>
+</select>
+
+  <div>
+    <div id="timer">Time: 10:00</div>
+
+  </div><br>
+
+  <div id="test-area">
+	  <b id="ref-label">Reference Text</b>
+    <div id="reference-text" class="reference-outer">
+      <div id="paragraph" class="paragraph">Loading...</div>
+    </div>
+    <div id="paper-note">
+      <strong>Paper-Based Test:</strong> type the passage from your printed paper. Your typing is compared with the original after you submit.
+    </div>
+<b id="typing-label">Typing Text</b>
+    <textarea id="typing-input" placeholder="Start typing here..."
+              rows="4" class="typing-input" spellcheck="false" autofocus></textarea>
+  <!-- Backspace Toggle Button -->
+  <button id="disable-toggle" class="toggle-btn" type="button" aria-pressed="false">
+    <span class="tg-track"><i></i></span><span>Disable Backspace</span><em class="tg-state">OFF</em>
+  </button>
+   <div style="text-align:right;">
+  <button id="refresh-btn" class="secondary-btn" type="button">Restart Test</button>
+  <button id="practice-another-btn" class="secondary-btn" type="button">New Exercise</button>
+  <button id="submit-btn" class="primary-btn">Submit Test</button>
+</div>
+  </div>
+
+</section>
+</main>
+
+
+<!-- POPUPS -->
+<div id="time-over-popup" class="popup" style="display:none;">
+  <div class="popup-inner">
+    <div class="tt-clock" aria-hidden="true">⏱</div>
+    <h3>Time is up!</h3>
+    <p>Opening your results…</p>
+    <button id="popup-ok-btn" class="primary-btn">View results now</button>
+  </div>
+</div>
+
+<div id="no-input-popup" class="popup" style="display:none;">
+  <div class="popup-inner">
+    <p>No typed input detected.</p>
+    <button id="no-input-ok-btn" class="primary-btn">OK</button>
+  </div>
+</div>
+</div>
+  </div>
+
+<!-- Printable paper for Paper-Based mode (filled by the Print Paper button) -->
+<div id="print-sheet" aria-hidden="true"></div>
+
+<script>
+/* Demo mode (opened from demo.html): a fixed 5-minute test. The time list is
+   replaced BEFORE script2.js / testpage-ui.js read it. Normal Long Paragraph
+   tests keep the 10 / 15 minute choice. */
+(function () {
+  var demo = false;
+  try { demo = localStorage.getItem("selectedExerciseMode") === "demo"; } catch (e) {}
+  var sel = document.getElementById("timerSelect");
+  if (!demo || !sel) return;
+  sel.innerHTML = '<option value="300">5 Minutes</option>';
+  sel.value = "300";
+  var t = document.getElementById("timer");
+  if (t) t.textContent = "Time: 5:00";
+})();
+</script>
+
+<script>
+/* Test Centre test (opened from tests.html): the time is fixed to that test type's
+   minutes. Runs BEFORE script2.js / testpage-ui.js read the time list. */
+(function () {
+  var tc = null;
+  try { tc = JSON.parse(localStorage.getItem("smartechActiveTest")); } catch (e) {}
+  var sel = document.getElementById("timerSelect");
+  if (!tc || !tc.minutes || !sel) return;
+  var secs = Math.round(tc.minutes * 60);
+  var mins = String(Math.round(tc.minutes * 10) / 10);
+  sel.innerHTML = '<option value="' + secs + '">' + mins + ' Minutes</option>';
+  sel.value = String(secs);
+  var t = document.getElementById("timer");
+  if (t) t.textContent = "Time: " + Math.floor(secs / 60) + ":" + String(secs % 60).padStart(2, "0");
+})();
+</script>
+
+<script>
+/* Test Mode: On-Screen / Paper-Based (single toggle button)
+   - On-Screen : reference text is shown above the typing box (default, button OFF).
+   - Paper     : reference text is hidden; the student types from a printed paper (button ON).
+                 The text still loads in #paragraph so script2.js scores as usual.
+   The choice is saved in localStorage under "testDisplayMode" ("onscreen" | "paper")
+   and is also available as window.testDisplayMode. Runs before script2.js. */
+(function () {
+  var KEY = "testDisplayMode";
+  var LABELS = { onscreen: "On-Screen Test", paper: "Paper-Based Test" };
+
+  var btn      = document.getElementById("mode-toggle");
+  var stateEl  = btn ? btn.querySelector(".tg-state") : null;
+  var typing   = document.getElementById("typing-input");
+  var shell    = document.querySelector(".test-shell");
+  var modeCell = document.getElementById("test-mode-value");
+  var printBtn = document.getElementById("print-paper-btn");
+  var timerSel = document.getElementById("timerSelect");
+  var sheet    = document.getElementById("print-sheet");
+
+  function readMode() {
+    var m = null;
+    try { m = localStorage.getItem(KEY); } catch (e) {}
+    return m === "paper" ? "paper" : "onscreen";
+  }
+
+  function applyMode(m, save) {
+    m = (m === "paper") ? "paper" : "onscreen";
+    var paper = (m === "paper");
+    document.body.setAttribute("data-test-mode", m);
+    window.testDisplayMode = m;
+    if (btn) {
+      btn.classList.toggle("active", paper);
+      btn.setAttribute("aria-pressed", String(paper));
+    }
+    if (stateEl) stateEl.textContent = paper ? "ON" : "OFF";
+    if (modeCell) modeCell.textContent = LABELS[m];
+    if (save) {
+      try { localStorage.setItem(KEY, m); } catch (e) {}
+      document.dispatchEvent(new CustomEvent("testmodechange", { detail: m }));
+    }
+  }
+
+  /* Lock the mode while a test is in progress so the text cannot be revealed mid-test */
+  function lockMode() {
+    if (!btn) return;
+    btn.disabled = true;
+    btn.title = "Mode is locked during a test. Restart the test to change it.";
+  }
+  function unlockMode() {
+    if (!btn) return;
+    btn.disabled = false;
+    btn.removeAttribute("title");
+  }
+
+  applyMode(readMode(), false);
+
+  if (btn) {
+    btn.addEventListener("click", function () {
+      applyMode(window.testDisplayMode === "paper" ? "onscreen" : "paper", true);
+    });
+  }
+
+  if (typing) {
+    typing.addEventListener("input", lockMode);
+  }
+
+  ["refresh-btn", "refresh-btn-2", "practice-another-btn", "practice-another-btn-2"].forEach(function (id) {
+    var b = document.getElementById(id);
+    if (b) b.addEventListener("click", function () { setTimeout(unlockMode, 0); });
+  });
+
+  if (shell && window.MutationObserver) {
+    new MutationObserver(function () {
+      if (shell.getAttribute("data-state") === "idle") unlockMode();
+    }).observe(shell, { attributes: true, attributeFilter: ["data-state"] });
+  }
+
+  /* Print Paper: prints the current passage as a question paper (Paper-Based mode) */
+  function endPrint() {
+    document.body.classList.remove("printing-paper");
+    if (sheet) sheet.textContent = "";
+  }
+  window.addEventListener("afterprint", endPrint);
+
+  function printPaper() {
+    var p = document.getElementById("paragraph");
+    var text = p ? (p.textContent || "").trim() : "";
+    if (!sheet || !text || text === "Loading...") {
+      alert("The passage is still loading. Please try again in a moment.");
+      return;
+    }
+
+    var mins = timerSel ? Math.round(parseInt(timerSel.value, 10) / 60) : 10;
+
+    sheet.textContent = "";
+
+    var title = document.createElement("div");
+    title.className = "ps-title";
+    title.textContent = "Smartech Typing Tutor — Long Paragraph Test";
+
+    var meta = document.createElement("div");
+    meta.className = "ps-meta";
+    meta.textContent = "Time allowed: " + mins + " minutes. Type the passage below exactly as printed.";
+
+    var fields = document.createElement("div");
+    fields.className = "ps-fields";
+    ["Name:", "Roll No.:", "Date:"].forEach(function (label) {
+      var s = document.createElement("span");
+      s.textContent = label;
+      fields.appendChild(s);
+    });
+
+    var body = document.createElement("div");
+    body.className = "ps-text";
+    body.textContent = text;
+    if (window.getComputedStyle) {
+      body.style.fontFamily = getComputedStyle(p).fontFamily;
+    }
+
+    sheet.appendChild(title);
+    sheet.appendChild(meta);
+    sheet.appendChild(fields);
+    sheet.appendChild(body);
+
+    document.body.classList.add("printing-paper");
+    window.print();
+    /* Some browsers do not fire afterprint reliably */
+    setTimeout(endPrint, 1500);
+  }
+
+  if (printBtn) printBtn.addEventListener("click", printPaper);
+})();
+</script>
+
+<script src="sheet-sync.js"></script>
+<script src="db.js"></script>
+<script src="wordengine.js"></script>
+<script src="tests.js"></script>
+<script>if (window.SmartechTests && SmartechTests.activeCriteria()) document.body.classList.add("tc-print");</script>
+<script src="script2.js"></script>
+<script src="autoscroll.js"></script>
+<script src="testpage-ui.js"></script>
+<script>
+/* Elements */
+const typingInput = document.getElementById("typing-input");
+const toggleBtn = document.getElementById("disable-toggle");
+
+let backspaceDisabled = false;
+
+/* Toggle Button Click */
+toggleBtn.addEventListener("click", () => {
+  backspaceDisabled = !backspaceDisabled;
+
+  toggleBtn.classList.toggle("active", backspaceDisabled);
+  toggleBtn.setAttribute("aria-pressed", String(backspaceDisabled));
+  toggleBtn.querySelector(".tg-state").textContent = backspaceDisabled ? "ON" : "OFF";
+});
+
+/* Disable Backspace Logic */
+typingInput.addEventListener("keydown", function(e) {
+  if (backspaceDisabled && e.key === "Backspace") {
+    e.preventDefault();
+  }
+});
+
+
+
+</script>
+
+</body>
+</html>

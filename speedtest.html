@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<script src="protect.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="themes.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="themes.css">
+<title>Speed Test | Smartech Typing Tutor</title>
+
+
+<link rel="stylesheet" href="speedtest.css">
+</head>
+<body>
+
+<link rel="stylesheet" href="sidebar.css">
+<script src="profile.js"></script>
+<script src="sidebar.js"></script>
+
+<div class="main">
+
+<button id="menuToggle">☰</button>
+
+<div class="st-wrap">
+
+  <!-- ===== Toolbar ===== -->
+  <div class="st-toolbar">
+    <div class="st-lang">
+      <span class="st-mark" id="stMark" aria-hidden="true">A</span>
+      <div><strong id="stLangName">English</strong><span class="st-sub">Speed test</span></div>
+    </div>
+    <div class="st-field">
+      <span class="st-label">Language</span>
+      <select id="language" aria-label="Language" data-seg>
+        <option value="english">English</option>
+        <option value="punjabi">Punjabi</option>
+        <option value="hindi">Hindi</option>
+      </select>
+    </div>
+    <div class="st-field">
+      <span class="st-label">Timer</span>
+      <select id="timer" aria-label="Timer" data-seg>
+        <option value="60">1 Minute</option>
+        <option value="300">5 Minutes</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Pre-select the language BEFORE speedtest-ui.js builds the switch:
+       ?lang=hindi in the address wins, otherwise the language used last time. -->
+  <script>
+  (function () {
+    var ok = /^(english|punjabi|hindi)$/, q = "", saved = "";
+    try { q = (new URLSearchParams(location.search).get("lang") || "").toLowerCase(); } catch (e) {}
+    try { saved = (localStorage.getItem("smartechSpeedLang") || "").toLowerCase(); } catch (e) {}
+    var v = ok.test(q) ? q : saved;
+    var sel = document.getElementById("language");
+    if (sel && ok.test(v)) sel.value = v;
+  })();
+  </script>
+
+  <div class="st-options">
+    <label class="st-switch"><input type="checkbox" id="highlight_toggle" checked><span class="st-track"></span>Highlight words</label>
+    <label class="st-switch"><input type="checkbox" id="backspace_toggle" checked><span class="st-track"></span>Allow backspace</label>
+    <span class="st-hintkeys"><kbd class="st-kbd">Space</kbd> next word</span>
+    <button id="restart_button" class="st-btn" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+      Restart
+    </button>
+  </div>
+
+  <!-- ===== Typing Area ===== -->
+  <section class="st-card" id="stShell" data-state="idle" aria-label="Typing practice">
+    <div class="st-hud">
+      <div class="st-timer" title="Time remaining"><span id="time_remaining">01:00</span></div>
+      <div class="st-stats" id="live_results" aria-live="off">
+        <div class="st-tile st-hero"><strong id="st_wpm">—</strong><span>WPM</span></div>
+        <div class="st-tile"><strong id="st_acc">100%</strong><span>Accuracy</span></div>
+        <div class="st-tile st-good"><strong id="st_ok">0</strong><span>Words ✓</span></div>
+        <div class="st-tile st-bad"><strong id="st_bad">0</strong><span>Words ✗</span></div>
+        <div class="st-tile st-good"><strong id="st_cok">0</strong><span>Chars ✓</span></div>
+        <div class="st-tile st-bad"><strong id="st_cbad">0</strong><span>Chars ✗</span></div>
+      </div>
+    </div>
+    <div class="st-bar" aria-hidden="true"><i id="stBar"></i></div>
+    <div class="st-status"><span id="stStatus">Ready — the timer starts with your first key.</span></div>
+
+    <div class="st-cap">Type this</div>
+    <div id="test_text"></div>
+
+    <div class="st-cap">Your typing</div>
+    <textarea id="typed_text" rows="2" placeholder="Start typing here…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+  </section>
+
+  <div id="resultBox" role="status"></div>
+
+</div>
+
+<!-- Word lists for English, Punjabi and Hindi (edit speedtest-words.js to change them) -->
+<script src="speedtest-words.js"></script>
+
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+
+/* ===== Per-language behaviour =====
+   One speed test, three languages. The word list comes from speedtest-words.js.
+   Punjabi and Hindi keep the key handling their own pages always had: Alt / AltGr /
+   Ctrl combinations are NOT blocked (the Indic layouts need AltGr for some letters),
+   and any key starting with "F" is ignored. English blocks modifier combinations
+   and ignores only the function keys F1-F12. */
+const LANGS = {
+  english: { words: window.StWords.english, blockModCombos: true,  isFnKey: k => /^F\d+$/.test(k) },
+  punjabi: { words: window.StWords.punjabi, blockModCombos: false, isFnKey: k => k.startsWith("F") },
+  hindi:   { words: window.StWords.hindi,   blockModCombos: false, isFnKey: k => k.startsWith("F") }
+};
+function currentLang(){
+  const v=document.getElementById("language").value;
+  return LANGS[v]?v:"english";
+}
+
+let words=[],timer,timeRemaining,currentIndex=0,correct=0,wrong=0,timeTaken=0,typed=[],chunkStart=0,chunkSize=18,testDone=false;
+
+/* NEW CHARACTER COUNTERS */
+let correctChars=0;
+let wrongChars=0;
+
+const box=document.getElementById("test_text"),
+input=document.getElementById("typed_text"),
+time=document.getElementById("time_remaining"),
+live=document.getElementById("live_results");
+
+function renderLive(){
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  const tw=correct+wrong, tc=correctChars+wrongChars;
+  set("st_wpm", timeTaken>=5 ? (tw/(timeTaken/60)).toFixed(1).replace(/\.0$/,"") : "—");
+  set("st_acc", tc ? ((correctChars/tc)*100).toFixed(0)+"%" : "100%");
+  set("st_ok", correct); set("st_bad", wrong);
+  set("st_cok", correctChars); set("st_cbad", wrongChars);
+}
+
+
+function generateWords(){
+  const source=LANGS[currentLang()].words;
+  words=Array.from({length:600},()=>source[Math.floor(Math.random()*source.length)]);
+}
+
+function displayChunk(){
+  box.innerHTML=words.slice(chunkStart,chunkStart+chunkSize)
+  .map((w,i)=>`<span id='word-${chunkStart+i}'>${w}</span>`).join(" ");
+  updateCurrentWordDisplay();
+}
+
+/* Build per-letter markup for the current word, highlighting the
+   next letter to be pressed in yellow, and coloring letters already
+   typed correctly/incorrectly. */
+function buildLetterHTML(word, typedSoFar){
+  return window.StLetters.build(word, typedSoFar);
+}
+
+function updateCurrentWordDisplay(){
+  const highlight=document.getElementById("highlight_toggle").checked;
+  const el=document.getElementById(`word-${currentIndex}`);
+  if(!el)return;
+  const word=words[currentIndex]||"";
+  if(!highlight){
+    el.className="";
+    el.textContent=word;
+    return;
+  }
+  el.className="current-word";
+  el.innerHTML=buildLetterHTML(word, input.value);
+}
+
+function updateHighlight(){
+  const highlight=document.getElementById("highlight_toggle").checked;
+  for(let i=chunkStart;i<chunkStart+chunkSize;i++){
+    const el=document.getElementById(`word-${i}`);
+    if(!el)continue;
+
+    if(i===currentIndex)continue; // handled by updateCurrentWordDisplay
+
+    el.className="";
+    el.textContent=words[i];
+    if(!highlight)continue;
+
+    if(i<currentIndex)
+      el.classList.add(typed[i]===words[i]?"correct":"incorrect");
+  }
+  updateCurrentWordDisplay();
+}
+
+function nextChunk(){
+  chunkStart+=chunkSize;
+  displayChunk();
+  updateHighlight();
+}
+
+function reset(){
+  const rb=document.getElementById("resultBox");
+  if(rb)rb.style.display="none";
+  clearInterval(timer);
+  timer=null;
+
+  timeRemaining=parseInt(document.getElementById("timer").value);
+
+  currentIndex=0;
+  correct=0;
+  wrong=0;
+  correctChars=0;
+  wrongChars=0;
+
+  timeTaken=0;
+  typed=[];
+  chunkStart=0;
+  testDone=false;
+
+  input.disabled=false;
+  input.value="";
+
+  generateWords();
+  updateTime();
+  displayChunk();
+
+         renderLive();
+
+}
+
+function updateTime(){
+  const m=String(Math.floor(timeRemaining/60)).padStart(2,"0");
+  const s=String(timeRemaining%60).padStart(2,"0");
+  time.textContent=`${m}:${s}`;
+  renderLive();
+}
+
+function startTime(){
+  if(!timer){
+    timer=setInterval(()=>{
+      if(timeRemaining>0){
+        timeRemaining--;
+        timeTaken++;
+        updateTime();
+      }
+      else{
+        clearInterval(timer);
+        finish();
+      }
+    },1000);
+  }
+}
+
+/* CHARACTER COMPARISON */
+function compareCharacters(typedWord, originalWord){
+
+  let minLength=Math.min(typedWord.length,originalWord.length);
+
+  for(let i=0;i<minLength;i++){
+    if(typedWord[i]===originalWord[i])
+      correctChars++;
+    else
+      wrongChars++;
+  }
+
+  if(typedWord.length>originalWord.length)
+    wrongChars+=typedWord.length-originalWord.length;
+
+  if(originalWord.length>typedWord.length)
+    wrongChars+=originalWord.length-typedWord.length;
+}
+
+function finish(){
+
+  testDone = true;
+  input.disabled = true;
+
+  const totalWords = correct + wrong;
+  const wpm = (totalWords / (timeTaken / 60)).toFixed(2);
+
+  const totalChars = correctChars + wrongChars;
+  const accuracy = totalChars ? ((correctChars / totalChars) * 100).toFixed(2) : 0;
+
+  let title, color;
+
+  if (wpm > 50) {
+    title = "🌟 Typing Wizard!";
+    color = "#178A53";
+  }
+  else if (wpm > 40) {
+    title = "🎉 Great Job!";
+    color = "var(--ink)";
+  }
+  else if (wpm > 25) {
+    title = "👍 Keep Practicing!";
+    color = "#B7791F";
+  }
+  else {
+    title = "🚧 Keep Improving!";
+    color = "#C9432B";
+  }
+
+  const tier = wpm > 50 ? "wiz" : wpm > 40 ? "great" : wpm > 25 ? "ok" : "low";
+  const ringColor = {wiz:"#178A53", great:"var(--accent)", ok:"#f59e0b", low:"#ef4444"}[tier];
+  const note = {wiz:"Outstanding speed. Exam-ready.", great:"Strong result. A little more and you are there.", ok:"Good progress. Keep practising daily.", low:"Every test makes you faster. Try again."}[tier];
+  const resultHTML = `
+    <h2 class="st-res-title" style="color:${color};">${title}</h2>
+    <p class="st-res-note">${note}</p>
+    <div class="st-ring" style="--p:${Math.min(100, (parseFloat(wpm)||0) / 60 * 100)};--ring:${ringColor};"><div><strong>${wpm}</strong><span>WPM</span></div></div>
+    <div class="st-res-grid">
+      <div class="st-tile"><strong>${totalWords}</strong><span>Total words</span></div>
+      <div class="st-tile st-good"><strong>${correct}</strong><span>Correct words</span></div>
+      <div class="st-tile st-bad"><strong>${wrong}</strong><span>Wrong words</span></div>
+      <div class="st-tile"><strong>${totalChars}</strong><span>Total chars</span></div>
+      <div class="st-tile st-good"><strong>${correctChars}</strong><span>Correct chars</span></div>
+      <div class="st-tile st-bad"><strong>${wrongChars}</strong><span>Wrong chars</span></div>
+    </div>
+    <div class="st-acc">
+      <div class="st-acc-top"><span>Accuracy</span><span>${accuracy}%</span></div>
+      <div class="st-acc-bar"><i style="width:${Math.max(0, Math.min(100, parseFloat(accuracy)||0))}%"></i></div>
+    </div>
+    <div class="st-res-actions"><button type="button" class="st-btn" id="stTryAgain">Try again</button></div>
+  `;
+
+  const resultBox = document.getElementById("resultBox");
+
+  if (resultBox) {
+    resultBox.innerHTML = resultHTML;
+    resultBox.style.display = "block";
+    resultBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    const again=document.getElementById("stTryAgain");
+    if(again)again.onclick=()=>{reset();window.scrollTo({top:0,behavior:"smooth"});setTimeout(()=>input.focus(),80);};
+  }
+}
+
+input.addEventListener("input", () => {
+  updateCurrentWordDisplay();
+});
+
+input.addEventListener("keydown", e => {
+
+  const cfg = LANGS[currentLang()];
+
+  // Ignore modifier and special keys
+  if (
+      (cfg.blockModCombos && (
+        e.altKey ||
+        e.ctrlKey ||
+        e.metaKey ||
+        e.getModifierState("AltGraph")
+      )) ||
+      e.key === "Shift" ||
+      e.key === "Alt" ||
+      e.key === "AltGraph" ||
+      e.key === "Control" ||
+      e.key === "Meta" ||
+      e.key === "CapsLock" ||
+      e.key === "Tab" ||
+      e.key === "Escape" ||
+      e.key === "Enter" ||
+      e.key.startsWith("Arrow") ||
+      cfg.isFnKey(e.key)
+  ) {
+      e.preventDefault();
+      return;
+  }
+
+  // Start timer only on real character typing
+  if (!timer && e.key.length === 1) {
+      startTime();
+  }
+
+  renderLive();
+
+  const allow = document.getElementById("backspace_toggle").checked;
+
+  // Space pressed = word completed
+  if (e.key === " ") {
+
+      const val = input.value.trim();
+
+      if (val) {
+
+          typed[currentIndex] = val;
+
+          if (val === words[currentIndex])
+              correct++;
+          else
+              wrong++;
+
+          compareCharacters(val, words[currentIndex]);
+          renderLive();
+
+          currentIndex++;
+          input.value = "";
+
+          if (currentIndex >= chunkStart + chunkSize)
+              nextChunk();
+
+          updateHighlight();
+      }
+
+      input.value = "";
+
+      e.preventDefault();
+  }
+
+  // Backspace control
+  else if (e.key === "Backspace" && !allow) {
+      e.preventDefault();
+  }
+});
+document.getElementById("highlight_toggle").addEventListener("change",()=>{updateHighlight();});
+document.getElementById("restart_button").onclick=reset;
+document.getElementById("timer").onchange=reset;
+
+/* Changing the language starts a fresh test in that language and is remembered for next time */
+document.getElementById("language").onchange=()=>{
+  try{localStorage.setItem("smartechSpeedLang",currentLang());}catch(e){}
+  reset();
+};
+
+reset();
+});
+
+/* Disable right click */
+document.addEventListener('contextmenu',e=>e.preventDefault());
+
+/* Disable shortcuts */
+document.addEventListener('keydown',function(e){
+
+if(
+e.key==="F12" ||
+(e.ctrlKey && e.shiftKey && ["I","J","C"].includes(e.key.toUpperCase())) ||
+(e.ctrlKey && ["U","S","C","V","X","A","P"].includes(e.key.toUpperCase()))
+){
+e.preventDefault();
+return false;
+}
+});
+
+/* Disable copy paste */
+["copy","paste","cut"].forEach(evt=>{
+document.addEventListener(evt,e=>e.preventDefault());
+});
+
+</script>
+
+</div>
+
+<script src="speedtest-ui.js"></script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" href="icon.ico">
+<meta charset="UTF-8">
+<script src="protect.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Print Exercises | Smartech Typing Tutor</title>
+<style>
+/* A4 with an 8 mm margin = 194 x 281 mm printable. The sheet is a little smaller (279 mm) so it
+   can never spill onto a second page, even if the printer adds its own rounding. */
+@page { size: A4; margin: 8mm; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #e9edf3; font-family: "Segoe UI", "Nirmala UI", Arial, sans-serif; color: #111; }
+
+/* ---------- on-screen toolbar (hidden when printing) ---------- */
+.pp-bar {
+  position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 16px; background: #0b2a5b; color: #fff;
+}
+.pp-bar .grow { flex: 1; font-size: 14px; }
+.pp-bar button, .pp-bar a {
+  background: #fff; color: #0b2a5b; border: none; border-radius: 8px; padding: 8px 16px;
+  font-weight: 700; font-size: 14px; cursor: pointer; text-decoration: none;
+}
+.pp-bar button.primary { background: #f2b705; }
+.pp-warn { margin: 12px auto 0; max-width: 194mm; background: #fff3cd; color: #664d03; padding: 8px 12px; border-radius: 8px; font-size: 13px; display: none; }
+
+.pp-pages { padding: 16px 0 40px; }
+
+/* ---------- one A4 sheet ---------- */
+.pp-sheet {
+  width: 194mm; height: 279mm; margin: 0 auto 14px; padding: 6mm 6mm 4mm;
+  background: #fff; box-shadow: 0 2px 14px rgba(0,0,0,.2);
+  display: flex; flex-direction: column; overflow: hidden; page-break-after: always; break-after: page;
+  page-break-inside: avoid; break-inside: avoid;
+}
+.pp-head { display: flex; align-items: center; gap: 12px; padding-bottom: 7px; border-bottom: 2.5px solid #0b2a5b; }
+.pp-logo { width: 17mm; height: 17mm; object-fit: contain; border-radius: 3px; }
+.pp-inst { flex: 1; min-width: 0; }
+.pp-inst-name { font-size: 16pt; font-weight: 800; color: #0b2a5b; line-height: 1.15; }
+.pp-inst-sub { font-size: 9pt; color: #555; margin-top: 2px; }
+.pp-doc { text-align: right; font-size: 13pt; font-weight: 800; color: #0b2a5b; line-height: 1.2; }
+.pp-doc span { font-size: 9.5pt; font-weight: 600; color: #444; }
+
+.pp-info { display: flex; flex-wrap: wrap; gap: 2px 18px; padding: 7px 0 4px; font-size: 9.5pt; }
+.pp-info .pp-kv b { color: #0b2a5b; }
+.pp-cand { display: flex; gap: 14px; padding: 6px 0 7px; font-size: 9.5pt; border-bottom: 1px solid #c9d1de; }
+.pp-cand span { flex: 1; display: flex; align-items: flex-end; gap: 4px; white-space: nowrap; }
+.pp-cand i { flex: 1; border-bottom: 1px solid #333; height: 12px; }
+
+.pp-title { padding: 7px 0 5px; font-size: 11.5pt; font-weight: 800; color: #0b2a5b; }
+.pp-text {
+  flex: 1; min-height: 0; overflow: hidden; white-space: pre-wrap; overflow-wrap: anywhere;
+  line-height: 1.5; text-align: left; padding: 6px 2mm; border: 1px solid #d3d9e4; border-radius: 4px;
+  font-family: "Segoe UI", "Nirmala UI", "Noto Sans Gurmukhi", "Noto Sans Devanagari", Arial, sans-serif;
+}
+.pp-text[data-fit="over"] { outline: 2px dashed #c62828; }
+.pp-foot { display: flex; justify-content: space-between; padding-top: 5px; font-size: 8pt; color: #666; }
+
+html.pp-embed .pp-bar, html.pp-embed .pp-warn { display: none !important; }
+html.pp-embed .pp-pages { padding: 0; }
+html.pp-embed .pp-sheet { margin: 0 auto; box-shadow: none; }
+@media print {
+  html, body { background: #fff; }
+  .pp-bar, .pp-warn { display: none !important; }
+  .pp-pages { padding: 0; }
+  .pp-sheet { margin: 0 auto; box-shadow: none; }
+  .pp-sheet:last-child { page-break-after: auto; break-after: auto; }
+  .pp-text[data-fit="over"] { outline: none; }
+}
+</style>
+</head>
+<body>
+<div class="pp-bar">
+  <a id="back" href="manage.html">&larr; Back</a>
+  <div class="grow" id="summary">Preparing sheets&hellip;</div>
+  <button class="primary" id="printBtn" type="button">Print</button>
+</div>
+<div class="pp-warn" id="warn"></div>
+<div class="pp-pages" id="pages"></div>
+
+<script src="exercises.js"></script>
+<script src="tests.js"></script>
+<script src="print.js"></script>
+<script>
+(function () {
+  var E = SmartechExercises, T = SmartechTests;
+  var q = new URLSearchParams(location.search);
+  var testId = q.get("test"), exNo = Number(q.get("ex")) || 0, all = q.get("all") === "1", normal = q.get("set") === "normal";
+  var onlyLang = q.get("lang") || "";
+  var embed = q.get("embed") === "1";        // loaded invisibly inside the test page (Print Exercise button)
+  if (embed) { document.documentElement.className = "pp-embed"; }
+  var back = q.get("back");
+  if (back) document.getElementById("back").setAttribute("href", back);
+
+  var LANG_CODE = { English: "en", Punjabi: "pa", Hindi: "hi" };
+  var MODE_LABEL = { chunk: "Chunk", paragraph: "Long paragraph", both: "Chunk / Long paragraph", demo: "Demo" };
+
+  // Numbering restarts at 1 in each language of a multi-language test (same as the exercise-selection page)
+  function testEntries(t, onlyNo, lang) {
+    var exs = E.testExercises(t.id);
+    var multi = !!(t.langs && t.langs.length > 1);
+    var counter = {}, out = [];
+    exs.forEach(function (ex, i) {
+      var L = ex.lang || t.lang || "English";
+      counter[L] = (counter[L] || 0) + 1;
+      var n = multi ? counter[L] : i + 1;
+      if (lang && L !== lang) return;
+      if (onlyNo && onlyNo !== n) return;
+      var r = T.ruleFor(t, L);                 // the rule of this exercise's language
+      out.push({
+        heading: t.name,
+        title: "Exercise " + n + (ex.title ? " \u2013 " + ex.title : ""),
+        lines: [
+          "Test: " + t.name,
+          "Language: " + L,
+          "Time: " + r.minutes + " min",
+          "Pass rule: " + T.summary(r).replace(/^\d+(\.\d+)? min \u00B7 /, "")
+        ],
+        text: ex.text,
+        langCode: LANG_CODE[L] || "en"
+      });
+    });
+    return out;
+  }
+
+  function normalEntries() {
+    var out = [], counter = {};
+    E.all().forEach(function (ex) {
+      if (ex.mode === "test") return;
+      var k = ex.lang + "|" + ex.mode;
+      counter[k] = (counter[k] || 0) + 1;
+      out.push({
+        heading: (MODE_LABEL[ex.mode] || ex.mode) + " practice",
+        title: "Exercise " + counter[k] + (ex.title ? " \u2013 " + ex.title : ""),
+        lines: ["Language: " + ex.lang, "Type: " + (MODE_LABEL[ex.mode] || ex.mode)],
+        text: ex.text,
+        langCode: LANG_CODE[ex.lang] || "en"
+      });
+    });
+    return out;
+  }
+
+  function build() {
+    var entries = [], what = "";
+    if (all) {
+      E.tests().forEach(function (t) { entries = entries.concat(testEntries(t)); });
+      entries = entries.concat(normalEntries());
+      what = "All exercises";
+    } else if (normal) {
+      entries = normalEntries(); what = "Practice exercises";
+    } else if (testId) {
+      var t = E.testById(testId);
+      if (t) { entries = testEntries(t, exNo, onlyLang); what = t.name + (onlyLang ? " \u2013 " + onlyLang : "") + (exNo ? " \u2013 Exercise " + exNo : ""); }
+    }
+    var summary = document.getElementById("summary");
+    if (!entries.length) {
+      window.__ppEmpty = true;
+      summary.textContent = "Nothing to print. Check that the exercises have downloaded (open Manage & Print online once).";
+      document.getElementById("pages").innerHTML = "";
+      return;
+    }
+    summary.textContent = what + " \u2014 " + entries.length + " A4 sheet" + (entries.length === 1 ? "" : "s") + ". Each exercise is auto-sized to fit one page.";
+    SmartechPrint.render(document.getElementById("pages"), entries).then(function () {
+      window.__ppReady = true;                 // the test page waits for this before printing
+      var over = document.querySelectorAll('.pp-text[data-fit="over"]').length;
+      var w = document.getElementById("warn");
+      if (over) { w.style.display = "block"; w.textContent = over + " exercise(s) are too long to fit one page even at the smallest size (marked with a red dashed border). Shorten them in the GitHub file."; }
+    });
+  }
+
+  document.getElementById("printBtn").addEventListener("click", function () { window.print(); });
+  build();                                   // cached exercises first
+  if (!embed) E.refresh().then(function (changed) { if (changed !== false) build(); });
+})();
+</script>
+</body>
+</html>

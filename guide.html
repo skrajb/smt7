@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<script src="protect.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>User Guide | Smartech Typing Tutor</title>
+<link rel="icon" type="image/png" href="icon.ico">
+<script src="themes.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="themes.css">
+<link rel="stylesheet" href="sidebar.css">
+<script src="profile.js"></script>
+<script src="sidebar.js"></script>
+<style>
+  .guide-wrap{ max-width:1000px; margin:26px auto 60px; padding:0 24px; }
+  .toc{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:22px; }
+  .toc a{ text-decoration:none; font-size:13.5px; font-weight:600; color:var(--accent); background:var(--card);
+          border:1px solid var(--border); border-radius:999px; padding:7px 14px; }
+  .toc a:hover{ border-color:var(--accent); }
+  .step{ background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow-sm);
+         padding:26px 28px; margin-bottom:22px; scroll-margin-top:20px; }
+  .step .num{ display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:50%;
+              background:var(--ink); color:#fff; font-weight:700; font-size:14px; margin-right:10px; }
+  .step h2{ display:flex; align-items:center; margin:0 0 10px; border:none; padding:0; font-size:1.35rem; color:var(--ink); }
+  .step p, .step li{ font-size:15px; color:var(--text); }
+  .step ol, .step ul{ padding-left:22px; margin:8px 0 14px; }
+  .step li{ margin-bottom:5px; }
+  .shot{ margin:16px 0 4px; border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden;
+         box-shadow:var(--shadow-md); background:#fff; }
+  .shot img{ display:block; width:100%; height:auto; cursor:zoom-in; }
+  .shot figcaption{ font-size:12.5px; color:var(--muted); padding:8px 14px; border-top:1px solid var(--border); background:var(--bg); }
+  figure{ margin:0; }
+  .tip{ background:var(--gold-soft); border-left:4px solid var(--gold); border-radius:var(--radius-sm); padding:10px 14px;
+        font-size:14px; margin:14px 0 0; }
+  .tip b{ color:var(--gold-dark); }
+  table.ref{ width:100%; border-collapse:collapse; font-size:14px; margin-top:8px; }
+  table.ref th, table.ref td{ border:1px solid var(--border); padding:9px 12px; text-align:left; }
+  table.ref th{ background:var(--bg); }
+  kbd{ background:var(--bg); border:1px solid var(--border); border-bottom-width:2px; border-radius:5px; padding:1px 7px; font-family:var(--font-mono); font-size:13px; }
+  #lightbox{ position:fixed; inset:0; background:rgba(5,15,29,.88); display:none; align-items:center; justify-content:center; z-index:20000; padding:24px; cursor:zoom-out; }
+  #lightbox img{ max-width:100%; max-height:100%; border-radius:10px; box-shadow:var(--shadow-lg); }
+  @media print{ #menuToggle, .sidebar, .toc, .app-page-head .aph-actions{ display:none !important; } .main{ margin-left:0 !important; } .step{ break-inside:avoid; box-shadow:none; } }
+</style>
+</head>
+<body>
+<div class="main">
+<button id="menuToggle">☰</button>
+
+<div class="guide-wrap">
+
+  <div class="toc" role="navigation" aria-label="Guide contents">
+    <a href="#install">1. Install</a>
+    <a href="#welcome">2. First launch</a>
+    <a href="#activate">3. Activate</a>
+    <a href="#dashboard">4. Dashboard &amp; menu</a>
+    <a href="#course">5. Lessons</a>
+    <a href="#practice">6. Typing practice</a>
+    <a href="#speedtest">7. Speed Test</a>
+    <a href="#demo">8. Demo test</a>
+    <a href="#testcentre">9. Test Centre</a>
+    <a href="#paragraph">10. Long paragraphs</a>
+    <a href="#results">11. Your results</a>
+    <a href="#progress">12. Progress</a>
+    <a href="#themes">13. Themes</a>
+    <a href="#shortcuts">14. Shortcuts</a>
+    <a href="#faq">15. FAQ</a>
+  </div>
+
+  <section class="step" id="install">
+    <h2><span class="num">1</span>Install the software</h2>
+    <ol>
+      <li>Run <b>Smartech-Typing-Tutor-Setup</b> and follow the installer.</li>
+      <li>Choose the folder you want (the default is fine) and keep <b>Create desktop shortcut</b> ticked.</li>
+      <li>Open <b>Smartech Typing Tutor</b> from the desktop shortcut or the Start menu.</li>
+    </ol>
+    <div class="tip"><b>Windows 7 / 8 / 8.1:</b> use the separate <i>Win7 32-bit</i> installer. The standard installer supports Windows 10 and 11.</div>
+  </section>
+
+  <section class="step" id="welcome">
+    <h2><span class="num">2</span>First launch: enter your name</h2>
+    <p>The first time the app opens it asks for your name and an optional roll / reference number. Your results and certificates are saved under this name automatically, so you never have to type it before a test.</p>
+    <figure class="shot"><img src="01-welcome.jpg" alt="Welcome screen asking for the student name"><figcaption>Enter your name once. Use "change name" in the sidebar to edit it later.</figcaption></figure>
+  </section>
+
+  <section class="step" id="activate">
+    <h2><span class="num">3</span>Activate your courses</h2>
+    <p>Each course (English, Punjabi, Hindi) is unlocked with its own activation code from your institute. Open <b>Activation</b> in the sidebar.</p>
+    <ol>
+      <li>Type or paste the code for the course into its box.</li>
+      <li>Press <b>Activate</b>. An internet connection is needed for this step only.</li>
+      <li>The card turns green and shows the expiry date and days remaining.</li>
+    </ol>
+    <figure class="shot"><img src="03-activation.jpg" alt="Activation page with course cards and the device ID"><figcaption>The Activation page shows your Device ID and the status of each course. Activated courses show their code, expiry date and days left.</figcaption></figure>
+    <div class="tip"><b>Moving to a new computer?</b> Click <b>Deactivate</b> on the old computer first, then activate on the new one. If the old computer is not available, send your institute the Device ID shown on this page.</div>
+    <div class="tip"><b>Test Centre tests</b> can have their own access codes. You enter those on the test's own page (see <a href="#testcentre">Test Centre</a>), not here.</div>
+  </section>
+
+  <section class="step" id="dashboard">
+    <h2><span class="num">4</span>The Dashboard and the sidebar menu</h2>
+    <p>The Dashboard is your home screen. Use the buttons to try the 5-minute demo, open the Test Centre, or start English, Punjabi or Hindi practice.</p>
+    <figure class="shot"><img src="02-dashboard.jpg" alt="Dashboard with the main buttons"><figcaption>The Dashboard: Demo, Test Centre and the three language courses.</figcaption></figure>
+    <p style="margin-top:14px">On every other page, open the sidebar with the <b>☰</b> button at the top-left. It lists Dashboard, Demo Test, Speed Test, Test Centre, the three typing courses, My Progress, User Guide, Activation, Disclaimer and Contact. Your name and the theme picker are at the top and bottom of the sidebar.</p>
+    <figure class="shot"><img src="02b-sidebar.jpg" alt="Sidebar menu open on the English Typing Course page"><figcaption>The sidebar menu. The highlighted item is the page you are on.</figcaption></figure>
+  </section>
+
+  <section class="step" id="course">
+    <h2><span class="num">5</span>Pick a lesson</h2>
+    <p>Each course starts with step-by-step lessons: home row, top row, bottom row, numbers, symbols, Shift keys and common words. Choose any lesson to begin. For longer practice texts, open the <b>Exercises</b> pages from the sidebar. For timed practice, use <b>Speed Test</b>, the <b>Demo Test</b> and the <b>Test Centre</b> in the sidebar.</p>
+    <figure class="shot"><img src="04-course.jpg" alt="English Typing Course page with the lesson grid"><figcaption>Start with Lesson 1 if you are a beginner.</figcaption></figure>
+  </section>
+
+  <section class="step" id="practice">
+    <h2><span class="num">6</span>Typing practice (chunk exercises)</h2>
+    <p>The text to copy is shown in the <b>Reference Text</b> box. Type it in the <b>Typing Text</b> box below, exactly as shown, including capitals and punctuation. The timer at the top starts with your first key, and live counters show your characters, words and backspaces.</p>
+    <figure class="shot"><img src="06-typing.jpg" alt="Typing practice page while a student is typing"><figcaption>Reference text on top, your typing below, timer and counters at the top. The whole test fits on one screen.</figcaption></figure>
+    <ul>
+      <li><b>Chunks:</b> a long text is split into chunks. Press <kbd>Enter</kbd> or <kbd>↓</kbd> to move to the next chunk (you must have typed at least 80% of the current one), and <kbd>↑</kbd> to go back.</li>
+      <li><b>Disable Backspace:</b> switch it ON to practise without correcting mistakes, as in some exams.</li>
+      <li><b>Auto Scroll:</b> ON by default. The Reference Text scrolls by itself so the word you are typing stays in view. Switch it OFF if you prefer to scroll yourself.</li>
+      <li><b>Restart Test</b> starts the same exercise again. <b>New Exercise</b> goes back to the list. <b>Submit Test</b> ends the test early.</li>
+    </ul>
+    <p>When time ends (or you submit), your result is shown and saved. A Pass automatically creates a certificate. See <a href="#results">Your results</a> for how to read it.</p>
+  </section>
+
+  <section class="step" id="speedtest">
+    <h2><span class="num">7</span>Speed Test</h2>
+    <p>For a quick timed drill, open <b>Speed Test</b> from the sidebar. Pick your <b>language</b> (English, Punjabi or Hindi) and <b>1 Minute</b> or <b>5 Minutes</b>, then start typing: the timer begins with your first key. Press <b>Space</b> after each word. Speed, accuracy and word counts update live, and a result card with your WPM appears when time is up.</p>
+    <figure class="shot"><img src="05-practice.jpg" alt="Speed Test page with timer, live speed and accuracy tiles"><figcaption>Speed Test: green words are correct, red words have mistakes, the highlighted word is the one to type next.</figcaption></figure>
+    <div class="tip"><b>How speed is calculated:</b> Gross speed (WPM) = total characters ÷ 5 ÷ minutes. One word counts as five characters. Accuracy matters as much as speed in real exams.</div>
+  </section>
+
+  <section class="step" id="demo">
+    <h2><span class="num">8</span>5-minute Demo test</h2>
+    <p>Open <b>Demo Test (5 min)</b> to try a real long-paragraph test in English, Punjabi or Hindi. Pick your language and type for 5 minutes. The result is saved in My Progress for 3 days, but a demo is <b>not</b> a pass / fail exam: no certificate is issued and it is not sent to the leaderboard.</p>
+    <figure class="shot"><img src="13-demo.jpg" alt="Demo test page with English, Punjabi and Hindi cards"><figcaption>Choose a language to start the 5-minute demo.</figcaption></figure>
+  </section>
+
+  <section class="step" id="testcentre">
+    <h2><span class="num">9</span>Test Centre (exam-style tests)</h2>
+    <p>Open <b>Test Centre</b> to take an exam-style test such as SSC CHSL or SSC CGL. Each card shows the test's <b>time</b>, its <b>pass rule</b> (minimum speed and accuracy) and its status:</p>
+    <ul>
+      <li><span style="color:#1a7f4b;font-weight:700">Days left</span>: you already have access. Click <b>Open exercises</b>.</li>
+      <li><span style="color:#b26a00;font-weight:700">Code needed</span>: open the card and enter the access code your institute gave you for that test.</li>
+      <li><b>Free</b>: no code is needed.</li>
+    </ul>
+    <figure class="shot"><img src="09-test-centre.jpg" alt="Test Centre page with test cards"><figcaption>Each test has its own time, pass rule and access.</figcaption></figure>
+    <p style="margin-top:14px">Some tests include <b>more than one language</b> (for example English and Punjabi). Their card shows a badge for each language, and the exercise page lists English and Punjabi as <b>separate blocks</b>, each with its own time, pass rule and exercise numbers. Pick the exercise from the language you want to type.</p>
+    <p style="margin-top:14px">After opening a test, choose the exercise you want. The test fixes the time and decides <b>Pass or Fail</b> by its own rule: you need the required speed <i>and</i> accuracy. The rule is repeated under your result. Results record the test name, and a Pass creates a certificate for that test.</p>
+    <p style="margin-top:14px"><b>PHHC (Punjab &amp; Haryana High Court)</b> is judged on the <b>words you type</b>, not on 5 keystrokes per word. Your <b>net words</b> are the words typed minus your mistakes (wrong, extra, skipped or joined / split words), and your <b>result speed</b> is net words divided by the 10 minutes. You pass with <b>300 net words in 10 minutes</b> (30 words per minute).</p>
+    <div class="tip"><b>Institute staff:</b> test types, exercises and access codes come from your institute's exercise file and licence sheet. For a test with two languages, write <code>language: English, Punjabi</code> in its <code>### TEST</code> block and tag each exercise with its language (optional own rule per language, e.g. <code>punjabi-wpm: 30</code>); see <code>test_types_format.txt</code>. Use <b>Manage</b> on the Dashboard to see every test and exercise and to print them on A4 sheets with the Smartech Education header.</div>
+  </section>
+
+  <section class="step" id="paragraph">
+    <h2><span class="num">10</span>Long paragraph exercises</h2>
+    <p>For full exam-style passages, open <b>Long Paragraph Practice</b> from a course page and choose an exercise. New exercises are added by your institute and download automatically when the computer is online. They are kept on the computer so they still work offline.</p>
+    <figure class="shot"><img src="07-paragraph-list.jpg" alt="List of long paragraph exercises"><figcaption>Click an exercise to start the test.</figcaption></figure>
+    <p style="margin-top:14px">The test screen shows the whole passage in the Reference Text box and your typing box right below it. A Test Centre test shows its name and time next to the heading.</p>
+    <figure class="shot"><img src="10-long-paragraph.jpg" alt="Long paragraph test in progress"><figcaption>Long paragraph test: Auto Scroll keeps the next word in view, and Submit Test is always visible.</figcaption></figure>
+    <ul>
+      <li><b>Test mode:</b> <b>On-Screen</b> (default) shows the passage above the typing box. Switch to <b>Paper-Based</b> to hide it and type from a printed paper; <b>Print Paper</b> prints the passage as a question sheet. The mode is locked while a test is running.</li>
+      <li><b>Disable Backspace</b> and <b>Auto Scroll</b> work the same as in chunk exercises.</li>
+      <li>Once time is over, the test cannot be resumed and the typed text cannot be edited.</li>
+    </ul>
+  </section>
+
+  <section class="step" id="results">
+    <h2><span class="num">11</span>Understanding your result</h2>
+    <p>When the test ends, the Results table shows the exercise, test mode, gross characters, the error counts, gross and actual speed, time taken, accuracy and backspace count, plus the Pass / Fail rule.</p>
+    <figure class="shot"><img src="11-results.jpg" alt="Results table after a long paragraph test"><figcaption>The Results table. Gross speed uses the full test time; actual speed uses the time you really took.</figcaption></figure>
+    <table class="ref">
+      <tr><th>Item</th><th>Meaning</th></tr>
+      <tr><td>Gross characters</td><td>Characters you typed correctly, plus the spaces between your words.</td></tr>
+      <tr><td>Wrong words</td><td>Words you typed differently from the passage.</td></tr>
+      <tr><td>Extra words</td><td>Words you typed that are not in the passage.</td></tr>
+      <tr><td>Skipped words</td><td>Passage words you missed <b>between</b> words you typed.</td></tr>
+      <tr><td>Space errors</td><td>Missing spaces (two words joined) or extra spaces.</td></tr>
+      <tr><td>Error characters</td><td>5 characters for every wrong, extra or skipped word, plus 2.5 for every space error.</td></tr>
+      <tr><td>Net characters</td><td>Gross characters minus error characters.</td></tr>
+      <tr><td>Accuracy</td><td>Net characters ÷ gross characters × 100 (never shown below 0%).</td></tr>
+    </table>
+    <div class="tip"><b>Only what you typed is judged.</b> Passage words after the last word you typed are never counted as skipped and never lower your accuracy, so stopping early or running out of time does not cost you extra marks.</div>
+    <p style="margin-top:14px">Scroll down to see the <b>Original Text</b> next to your <b>Typed Text</b>, with every mistake marked.</p>
+    <figure class="shot"><img src="12-results-compare.jpg" alt="Original text and typed text side by side with mistakes marked"><figcaption>Green is correct, red is a wrong or extra word, and a struck-through word was skipped.</figcaption></figure>
+  </section>
+
+  <section class="step" id="progress">
+    <h2><span class="num">12</span>Track your progress and certificates</h2>
+    <p>Open <b>My Progress</b> to see the tests you have taken in the last 3 days (older results are removed automatically): which exercise it was, speed, accuracy and result. Best speed and average accuracy are shown for each language. Earned certificates are listed on the same page, and you can export the history to a CSV file that opens in Excel.</p>
+    <figure class="shot"><img src="08-progress.jpg" alt="My Progress page with stats, history and certificates"><figcaption>Your history stays on this computer and covers the last 3 days.</figcaption></figure>
+    <div class="tip"><b>Today's Leaderboard</b> needs an internet connection. Your own results are always saved on the computer.</div>
+  </section>
+
+  <section class="step" id="themes">
+    <h2><span class="num">13</span>Change the look</h2>
+    <p>At the bottom of the sidebar, pick one of five colour themes: <b>Ink &amp; Gold</b>, <b>Silver Steel</b>, <b>Pearl Ivory</b>, <b>Mint Fresh</b> or <b>Lavender Mist</b>. Your choice is remembered. Use <kbd>Ctrl</kbd> + <kbd>+</kbd> / <kbd>-</kbd> to make everything larger or smaller, and <kbd>Ctrl</kbd> + <kbd>0</kbd> to reset.</p>
+    <figure class="shot"><img src="14-themes.jpg" alt="Sidebar with the five theme buttons, Pearl Ivory selected"><figcaption>The theme buttons are at the bottom of the sidebar. This page uses Pearl Ivory.</figcaption></figure>
+  </section>
+
+  <section class="step" id="shortcuts">
+    <h2><span class="num">14</span>Handy shortcuts</h2>
+    <table class="ref">
+      <tr><th>Key</th><th>What it does</th></tr>
+      <tr><td><kbd>F11</kbd></td><td>Full screen on or off (recommended for tests)</td></tr>
+      <tr><td><kbd>Ctrl</kbd> + <kbd>+</kbd> / <kbd>-</kbd></td><td>Zoom in / out</td></tr>
+      <tr><td><kbd>Ctrl</kbd> + <kbd>0</kbd></td><td>Reset zoom</td></tr>
+      <tr><td><kbd>Enter</kbd> / <kbd>↓</kbd></td><td>Next chunk (chunk exercises)</td></tr>
+      <tr><td><kbd>↑</kbd></td><td>Previous chunk (chunk exercises)</td></tr>
+      <tr><td><kbd>Space</kbd></td><td>Finish a word in Speed Test</td></tr>
+      <tr><td>☰ button</td><td>Open or close the sidebar menu</td></tr>
+    </table>
+    <p class="tip" style="margin-top:14px"><b>Note:</b> copy, paste, text selection and right-click are switched off inside the app on purpose, to match real exam conditions.</p>
+  </section>
+
+  <section class="step" id="faq">
+    <h2><span class="num">15</span>Questions and troubleshooting</h2>
+    <table class="ref">
+      <tr><th>Problem</th><th>What to do</th></tr>
+      <tr><td>"Invalid activation code"</td><td>Check the code for typing mistakes and make sure you used the code for the right course or test.</td></tr>
+      <tr><td>"Already activated on another computer"</td><td>Deactivate it on the old computer, or contact your institute with your Device ID.</td></tr>
+      <tr><td>Course asks to activate again</td><td>The 90-day activation has ended. Ask your institute for a new code.</td></tr>
+      <tr><td>A Test Centre test says "Code needed" or is locked</td><td>Open the test and enter its access code. If the code was blocked or has expired, ask your institute for a new one.</td></tr>
+      <tr><td>Activation fails</td><td>Check the internet connection. Activation and the leaderboard are the only parts that need it.</td></tr>
+      <tr><td>The Test Centre or exercise list is empty</td><td>Connect to the internet once so the exercises can download. After that they work offline.</td></tr>
+      <tr><td>Punjabi or Hindi letters do not appear</td><td>Add the language and keyboard layout in Windows Settings &gt; Time &amp; Language, then switch to it with <kbd>Alt</kbd> + <kbd>Shift</kbd>.</td></tr>
+      <tr><td>I cannot change Test Mode in the middle of a test</td><td>It is locked while a test runs. Press <b>Restart Test</b>, then change it.</td></tr>
+      <tr><td>Leaderboard is empty</td><td>It needs an internet connection. Your own results are always saved on the computer.</td></tr>
+    </table>
+    <p style="margin-top:14px">Still stuck? Open <a href="contact.html">Contact</a> and email us with your Device ID and a short description.</p>
+  </section>
+
+</div>
+</div>
+
+<div id="lightbox"><img alt=""></div>
+<script>
+(function(){
+  var lb=document.getElementById('lightbox'), im=lb.querySelector('img');
+  document.querySelectorAll('.shot img').forEach(function(i){
+    i.addEventListener('click',function(){ im.src=i.src; lb.style.display='flex'; });
+  });
+  lb.addEventListener('click',function(){ lb.style.display='none'; });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') lb.style.display='none'; });
+})();
+</script>
+</body>
+</html>

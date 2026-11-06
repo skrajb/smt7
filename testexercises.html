@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" href="icon.ico">
+<meta charset="UTF-8">
+<script src="protect.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Exercises | Smartech Typing Tutor</title>
+<script src="themes.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="themes.css">
+<link rel="stylesheet" href="sidebar.css">
+<style>
+html, body { height: 100%; margin: 0; }
+body { font-family: var(--font-body); background: var(--bg); display: flex; flex-direction: column; min-height: 100vh; }
+.te-wrap { width: 92%; max-width: 1000px; margin: 24px auto 40px; }
+.te-intro, .te-box {
+  background: var(--card); border: 1px solid var(--border); border-top: 3px solid var(--gold);
+  border-radius: 16px; box-shadow: var(--shadow-md); padding: 22px; margin-bottom: 18px;
+}
+.te-intro h2 { margin: 0 0 6px; border: none; padding: 0; color: var(--ink); }
+.te-intro p { margin: 0 0 12px; color: var(--muted); line-height: 1.55; font-size: 14.5px; }
+.te-facts { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.te-facts li { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; font-size: 13.5px; color: var(--ink); }
+.te-facts b { color: var(--muted); font-weight: 700; margin-right: 4px; }
+.te-box h3 { margin: 0 0 12px; color: var(--ink); font-size: 1.05rem; }
+.te-lang { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 18px 0 10px; padding: 8px 12px;
+  background: var(--bg); border-left: 4px solid var(--gold); border-radius: var(--radius-sm); font-size: 13px; color: var(--muted); }
+.te-lang:first-of-type { margin-top: 4px; }
+.te-lang-name { font-weight: 800; font-size: 15px; color: var(--ink); }
+.te-ex { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+.te-ex .exercise-btn {
+  background: var(--ink); color: #fff; border: none; border-radius: 12px; padding: 14px 16px; text-align: left;
+  font-weight: 700; font-size: .95rem; cursor: pointer; transition: transform .12s ease;
+}
+.te-ex .exercise-btn:hover { transform: translateY(-2px); }
+.te-ex .exercise-btn small { display: block; font-weight: 500; opacity: .8; margin-top: 3px; font-size: .75rem; }
+/* Languages of a multi-language test (e.g. English + Punjabi) sit side by side */
+.te-wrap.te-wide { max-width: 1200px; }
+.te-cols { display: grid; gap: 18px; align-items: start; }
+.te-col { min-width: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px 14px; }
+.te-col .te-lang { margin: 0 0 12px; background: var(--card); }
+.te-col .te-ex { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+@media (max-width: 720px) { .te-cols { grid-template-columns: 1fr !important; } }
+.te-cell { display: flex; flex-direction: column; gap: 5px; }
+.te-cell .exercise-btn { width: 100%; }
+.te-print { align-self: flex-start; font-size: 12px; font-weight: 700; color: var(--ink); text-decoration: none; border: 1px solid var(--border); border-radius: 8px; padding: 3px 10px; background: var(--card); }
+.te-print:hover { background: var(--bg); }
+.te-locked { background: #fff3cd; color: #664d03; border-radius: 10px; padding: 8px 12px; font-size: 13px; margin: 0 0 10px; }
+.te-locked a { color: inherit; font-weight: 700; }
+.te-ex .exercise-btn.te-off { opacity: .45; cursor: not-allowed; transform: none; }
+.te-empty { color: var(--muted); font-size: 14px; margin: 0; }
+.te-code { display: flex; gap: 8px; flex-wrap: wrap; }
+.te-code input {
+  flex: 1; min-width: 200px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px;
+  font-size: 15px; letter-spacing: .05em; text-transform: uppercase; background: var(--card); color: var(--ink);
+}
+.te-btn { background: var(--ink); color: #fff; border: none; border-radius: 10px; padding: 12px 22px; font-weight: 700; cursor: pointer; font-size: .95rem; }
+.te-btn:disabled { opacity: .6; cursor: wait; }
+.te-until { margin-top: 12px; color: var(--muted); font-size: 12.5px; }
+</style>
+<script>
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('copy', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+    if (e.key === 'F12') e.preventDefault();
+    if (e.ctrlKey && e.shiftKey && e.key === 'I') e.preventDefault();
+    if (e.ctrlKey && e.key === 'u') e.preventDefault();
+    if (e.ctrlKey && e.key === 's') e.preventDefault();
+});
+</script>
+<script src="profile.js"></script>
+<script src="sidebar.js"></script>
+<script src="activation.js"></script>
+</head>
+<body>
+<div class="main">
+<button id="menuToggle">&#9776;</button>
+<div class="te-wrap" id="te"><p class="te-empty">Loading&hellip;</p></div>
+
+<script src="exercises.js"></script>
+<script src="tests.js"></script>
+<script>
+(function () {
+  var E = SmartechExercises, T = SmartechTests, esc = T.esc;
+  var root = document.getElementById("te");
+  var id = new URLSearchParams(location.search).get("id") || "";
+  var loading = true;
+
+  function render() {
+    var t = E.testById(id);
+    if (!t) {
+      root.innerHTML = '<div class="te-box"><p class="te-empty">' + (loading ? "Loading\u2026" :
+        "This test was not found. <a href='tests.html'>Back to Test Centre</a>") + "</p></div>";
+      return;
+    }
+    var exs = E.testExercises(t.id);
+    var langs = (t.langs && t.langs.length) ? t.langs.slice() : [];
+    if (!langs.length) exs.forEach(function (e) { if (e.lang && langs.indexOf(e.lang) === -1) langs.push(e.lang); });
+    var multi = langs.length > 1;
+    root.className = "te-wrap" + (multi ? " te-wide" : "");
+    var ruleText = function (r) { return esc(T.summary(r).replace(/^\d+(\.\d+)? min \u00B7 /, "")); };
+    var facts = multi
+      ? "<li><b>Languages</b>" + esc(langs.join(" + ")) + "</li>" +
+        langs.map(function (L) { var r = T.ruleFor(t, L);
+          return "<li><b>" + esc(L) + "</b>" + esc(r.minutes) + " min &middot; " + ruleText(r) + "</li>"; }).join("")
+      : (langs.length ? "<li><b>Language</b>" + esc(langs[0]) + "</li>" : "") +
+        "<li><b>Time</b>" + esc(t.minutes) + " min</li>" +
+        "<li><b>Pass rule</b>" + ruleText(t) + "</li>";
+    var html =
+      '<div class="te-intro"><h2>' + esc(t.name) + "</h2>" +
+      (t.desc ? "<p>" + esc(t.desc) + "</p>" : "") +
+      '<ul class="te-facts">' + facts +
+        "<li><b>Format</b>" + (t.mode === "chunk" ? "Chunk typing" : "Long paragraph") + "</li></ul></div>" +
+      '<div class="te-box" id="body"></div>';
+    root.innerHTML = html;
+    var body = document.getElementById("body");
+
+    if (!T.isUnlocked(t)) {
+      var info = getActivationInfo(t.code);
+      body.innerHTML = '<h3>' + (info.expired ? "Your access has expired" : "Enter your access code") + '</h3>' +
+        '<div class="te-code"><input type="text" maxlength="40" placeholder="Activation code" autocomplete="off" spellcheck="false">' +
+        '<button class="te-btn" type="button">Activate</button></div>';
+      var input = body.querySelector("input"), btn = body.querySelector("button");
+      var go = function () {
+        if (btn.disabled) return;
+        btn.disabled = true; btn.textContent = "Checking\u2026";
+        T.unlock(t, input.value).then(function (r) {
+          if (r.reason === "EMPTY") alert("Please type your activation code.");
+          if (r.ok) { render(); return; }
+          btn.disabled = false; btn.textContent = "Activate";
+        });
+      };
+      btn.addEventListener("click", go);
+      input.addEventListener("keydown", function (e) { if (e.key === "Enter") go(); });
+      return;
+    }
+
+    body.innerHTML = "<h3>Choose an exercise</h3>";
+    if (!exs.length) {
+      body.insertAdjacentHTML("beforeend", '<p class="te-empty">' + (loading ? "Loading exercises\u2026" : "No exercises have been added to this test yet.") + "</p>");
+    } else {
+      // One separate block per language (numbering starts again at 1 in each block)
+      var groups = langs.length ? langs : [""];
+      exs.forEach(function (e) { if (groups.indexOf(e.lang) === -1 && groups.indexOf("") === -1) groups.push(e.lang); });
+      var cols = null;
+      if (multi) {
+        cols = document.createElement("div");
+        cols.className = "te-cols";
+        cols.style.gridTemplateColumns = "repeat(" + Math.min(groups.length, 3) + ", minmax(0, 1fr))";
+        body.appendChild(cols);
+      }
+      groups.forEach(function (L) {
+        var list = exs.filter(function (e) { return !L || e.lang === L; });
+        if (!list.length && !multi) return;
+        // multi-language: one column per language; otherwise everything goes straight into the box
+        var target = body;
+        if (multi) {
+          target = document.createElement("div");
+          target.className = "te-col";
+          cols.appendChild(target);
+          var r = T.ruleFor(t, L);
+          target.insertAdjacentHTML("beforeend",
+            '<div class="te-lang"><span class="te-lang-name">' + esc(L) + "</span>" +
+            "<span>" + esc(r.minutes) + " min &middot; " + ruleText(r) + "</span></div>");
+        }
+        if (!list.length) {
+          target.insertAdjacentHTML("beforeend", '<p class="te-empty">No ' + esc(L) + " exercises have been added yet.</p>");
+          return;
+        }
+        // free test: each language opens only when that language is activated
+        var langOk = T.langUnlocked(t, L);
+        if (!langOk) {
+          target.insertAdjacentHTML("beforeend", '<div class="te-locked">&#128274; Activate <b>' + esc(L) + '</b> to use these exercises. ' +
+            '<a href="activate.html">Go to Activation</a></div>');
+        }
+        var grid = document.createElement("div");
+        grid.className = "te-ex";
+        list.forEach(function (ex, i) {
+          var b = document.createElement("button");
+          b.type = "button"; b.className = "exercise-btn";
+          b.innerHTML = (multi ? esc(L) + " " : "") + "Exercise " + (i + 1) + (ex.title ? "<small>" + esc(ex.title) + "</small>" : "");
+          if (!langOk) { b.disabled = true; b.classList.add("te-off"); b.insertAdjacentHTML("afterbegin", "&#128274; "); }
+          b.addEventListener("click", function () {
+            // last-moment check with the sheet: a blocked / expired code is caught before the test opens
+            T.revalidate(t, { force: true }).then(function () {
+              if (T.isUnlocked(t) && T.langUnlocked(t, L)) T.start(t, ex, i); else render();
+            });
+          });
+          var cell = document.createElement("div");
+          cell.className = "te-cell";
+          cell.appendChild(b);
+          if (langOk) {   // print the exercise sheet BEFORE the test (same sheet as Manage & Print)
+            var pa = document.createElement("a");
+            pa.className = "te-print";
+            pa.innerHTML = "&#128424; Print";
+            pa.href = "printexercise.html?test=" + encodeURIComponent(t.id) + (multi ? "&lang=" + encodeURIComponent(L) : "") +
+              "&ex=" + (i + 1) + "&back=" + encodeURIComponent("testexercises.html?id=" + t.id);
+            cell.appendChild(pa);
+          }
+          grid.appendChild(cell);
+        });
+        target.appendChild(grid);
+      });
+    }
+    if (T.needsCode(t)) {
+      var inf = getActivationInfo(t.code);
+      if (inf.code) body.insertAdjacentHTML("beforeend", '<div class="te-until">Access until ' + esc(formatActivationDate(inf.expiresAt)) + "</div>");
+    }
+  }
+
+  render();
+  E.refresh().then(function () {
+    loading = false; render();
+    var t = E.testById(id);
+    return t ? T.revalidate(t) : false;
+  }).then(function (changed) { if (changed) render(); });
+})();
+</script>
+</div>
+</body>
+</html>

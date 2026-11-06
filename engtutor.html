@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="protect.js"></script>
+	<link rel="icon" type="image/png" href="icon.ico">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>English Typing Course | Smartech Typing Tutor</title>
+	  <script src="themes.js"></script>
+	  <link rel="stylesheet" href="styles.css" />
+	  <link rel="stylesheet" href="themes.css">
+<style>
+*{box-sizing:border-box}
+  body{
+    font-family:var(--font-body);
+    margin:0; background:var(--bg); color:#111;
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  }
+
+  header{
+    padding:22px 28px; display:flex; align-items:center; justify-content:space-between;
+    background:linear-gradient(90deg,#fff,#f2f4f8); border-bottom:1px solid rgba(0,0,0,0.04);
+  }
+  header h1{margin:0; font-size:20px; color:var(--ink); letter-spacing:0.2px}
+  header p{margin:0; color:var(--muted); font-size:13px}
+
+  main{max-width:1100px;margin:28px auto;padding:0 20px}
+
+  /* LESSON GRID */
+  #lessonGrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:16px; margin-bottom:22px}
+  .lessonBtn{
+    background:var(--card); border-radius:12px; padding:18px; box-shadow:0 6px 18px rgba(16,24,40,0.06);
+    border:1px solid rgba(2,41,95,0.04); cursor:pointer; text-align:center;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .lessonBtn:hover{transform:translateY(-6px); box-shadow:0 10px 30px rgba(16,24,40,0.08)}
+  .lessonBtn h3{margin:0;color:var(--ink);font-size:16px}
+  .lessonBtn p{margin:6px 0 0;color:var(--muted);font-size:13px}
+
+  /* TEST AREA */
+  #testArea{display:none; margin-top:10px}
+  .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+  .btn{background:var(--ink);color:#fff;padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid rgba(2,41,95,0.12)}
+  .meta{color:var(--muted);font-size:13px}
+
+  .card{
+    background:var(--card); border-radius:12px; padding:18px; box-shadow:0 8px 30px rgba(16,24,40,0.06);
+    border:1px solid rgba(2,41,95,0.04);
+  }
+
+  /* text display */
+  #textDisplay{min-height:140px; padding:14px;border-radius:8px;border:1px dashed rgba(0,0,0,0.06);
+    font-size:20px; line-height:1.7; font-family:var(--font-body); white-space:pre-wrap; word-break:break-word;
+    background:linear-gradient(180deg,#fff,#fbfdff);
+  }
+
+  /* character spans */
+  #textDisplay .ch{border-radius:2px;}
+ #textDisplay .current{background-color:Yellow;font-weight:; box-shadow:0 2px 0 rgba(0,0,0,0.06); font-size:20px;}
+ #textDisplay .correct{
+    color:var(--green) !important;
+    font-weight:bold !important;
+    background:none !important;
+}
+  #textDisplay .incorrect{background:transparent; color:var(--red); font-weight:600}
+  #textDisplay .space{display:inline-block; min-width:8px; border-bottom:1px dashed rgba(0,0,0,0.03)}
+
+  /* flash animation when wrong pressed */
+  @keyframes flashRed {
+    0%{background:rgba(224,61,61,0.14)}
+    100%{background:transparent}
+  }
+  .flash { animation: flashRed .45s ease; }
+
+  /* stats */
+  .statsGrid{display:flex;gap:14px;margin-top:12px;flex-wrap:wrap}
+  .stat{background:#fff;padding:10px 12px;border-radius:10px;box-shadow:0 6px 20px rgba(16,24,40,0.03);font-size:14px}
+  .stat strong{display:block;color:var(--ink);font-size:15px}
+
+  /* results area */
+  #results{margin-top:16px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfdff);border:1px solid rgba(2,41,95,0.03)}
+  #results h4{margin:0 0 8px;color:var(--accent)}
+  #results p{margin:4px 0;color:var(--muted);font-size:14px}
+
+  /* back button */
+  .backLink{display:inline-flex;align-items:center;gap:8px;color:var(--ink);cursor:pointer;font-weight:600;margin-bottom:8px}
+
+  @media(max-width:640px){
+    #textDisplay{font-size:18px}
+  }
+  .header {display:flex;justify-content:space-between;align-items:center;padding:15px 40px;animation:fadeDown 1s ease;}
+.header img{height:60px;}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+    flex-direction: column;
+  min-height: 100vh;
+}
+		#fullscreenBtn {
+  background: white;
+  color:var(--ink);
+  border-radius: 5px;
+  border: none;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#fullscreenBtn:hover {
+  background: var(--accent-dark);
+}
+html, body {
+  height: 100%;
+  margin: 0;
+}
+.exercise-btn{
+background:var(--ink);
+color:white;
+border:none;
+padding:12px;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+width:150px;
+height:60px;
+margin:5px;
+font-size:14px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.exercise-btn:hover{
+background:var(--ink-700);
+}
+
+.speed-btn{
+display:inline-block;
+background:var(--ink);
+color:white;
+padding:12px 28px;
+border-radius:8px;
+font-weight:bold;
+text-decoration:none;
+font-size:16px;
+transition:0.3s;
+}
+
+.speed-btn:hover{
+background:var(--ink-700);
+transform:translateY(-2px);
+}
+</style>
+
+<link rel="stylesheet" href="sidebar.css">
+
+<script src="activation.js"></script>
+<script src="profile.js"></script>
+<script src="sidebar.js"></script>
+</head>
+<body>
+<div class="main">
+
+
+<button id="menuToggle">☰</button>
+
+<script>
+if(!isActivationValid("ENG")){
+window.location="activate.html";
+}
+
+// Disable right click
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
+
+
+
+// Disable copy / paste / cut
+["copy", "paste", "cut"].forEach(evt => {
+    document.addEventListener(evt, e => e.preventDefault());
+});</script>
+
+
+<script>
+	if(!isActivationValid("ENG")){
+
+const code = prompt("Enter English Tutor Activation Code");
+
+activateProduct(code,"ENG").then(result=>{
+
+if(result.ok){
+
+markActivated("ENG", code, result.expiresAt);
+
+location.reload();
+
+}
+
+});
+
+}
+// Disable right click
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
+
+// Disable keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Disable: F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S, Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+A, Ctrl+P
+    if (
+        e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && ["I","J","C"].includes(e.key.toUpperCase())) ||
+        (e.ctrlKey && ["U","S","C","V","X","A","P"].includes(e.key.toUpperCase()))
+    ) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+// Disable copy / paste / cut
+["copy", "paste", "cut"].forEach(evt => {
+    document.addEventListener(evt, e => e.preventDefault());
+});
+// Disable right click
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
+
+// Disable keyboard shortcuts
+
+
+</script>
+
+<main>
+  <!-- LESSON GRID (visible on open) -->
+  <section id="lessonsSection">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h2 style="margin:0">Choose a Lesson</h2>
+      <div class="meta">Pick any lesson to begin — tests use random words from the lesson.</div>
+    </div>
+
+    <div id="lessonGrid" aria-label="lessons grid"></div>
+  </section>
+
+  
+  <!-- TEST AREA (hidden until lesson selected) -->
+  <section id="testArea">
+    <div class="backLink" id="backToLessons" title="Back to lessons">← Back to lessons</div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>
+          <h3 id="lessonTitle" style="margin:0;color:var(--ink)	"></h3>
+          <div class="meta" id="lessonSubtitle"></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button id="prevLessonBtn" class="btn ghost">
+    ← Previous Lesson
+</button>
+
+<button id="restartBtn" class="btn ghost">
+    Restart Lesson
+</button>
+
+<button id="nextLessonBtn" class="btn">
+    Next Lesson →
+</button>
+          
+        </div>
+      </div>
+
+      <hr style="margin:12px 0;border:none;border-top:1px solid rgba(0,0,0,0.04)">
+
+      <div id="textDisplay" aria-live="polite" tabindex="0"></div>
+
+      <div class="statsGrid" style="margin-top:12px">
+        <div class="stat"><strong id="time">00:00</strong><small>Time</small></div>
+        <div class="stat"><strong id="correctCount">0</strong><small>Correct chars</small></div>
+        <div class="stat"><strong id="wrongCount">0</strong><small>Wrong hits</small></div>
+        <div class="stat"><strong id="accuracy">0%</strong><small>Accuracy</small></div>
+        <div class="stat"><strong id="wpm">0</strong><small>WPM</small></div>
+      </div>
+
+      <div id="results" style="display:none">
+        <h4>Result</h4>
+        <p id="finalSummary">Complete the test to see results here.</p>
+      </div>
+    </div>
+  </section>
+  
+<div id="extraSections"></div>
+</main>
+
+<script>
+
+/* =========================
+   English Typing Tutor Page
+   =========================
+   - Option A: random words per lesson
+   - letter-by-letter enforcement
+   - backspace allowed to go back
+   - live stats and final result shown in-page (no popups)
+*/
+
+(() => {
+  // ---------- LESSON WORD LISTS ----------
+  const lessons = {
+		lesson1: ["all","ask","has","dad","sad","had","lad","lag","add","flag","gas","fall","hall","jaals","dada","jaffa","alaska","lass","alfa","kafla","dass","dash","flash","skaff","lakh","shall","gash","glass","alas","half","salad","glad","slag","kala","salsa","jags"],
+		lesson2: ["wise","fly","tap","yak","see","ill","oil","owl","thats","wife","keep","safe","fail","less","tell","leaf","quill","post","joes","with","ugly","skill","silk","risk","hair","first","kids","user","shell","offer","tea","sail","seal","life","lead","desk","dull","that","frogs","alert","park","faith","its","lets","early","eagle","towel","whose","judge","their","other","eight","looks","agreed","good","house","fifth","word","loyal","right","truth","youth","should","laugh","would","height","flight","author","fight","great","three","tiger","useful","yellow","idiot","south","style","dutiful","quality","large","yesterday","spiritual"],
+		lesson3: ["fox","box","boy","copycat","mat","milk","nice","net","next","meat","lamb","zila","hint","veto","lock","chart","body","dr","doze","zero","neck","need","xray","navy","moon","meet","value","zebra","mike","quick","sixth","burn","turn","smell","limbs","some","chase","maps","prison","defects","fabric","print","number","action","humble","nation","major","exactly","cut","cross","purpose","charity","define","miracle","brought","young","caught","many","universe","manner","money","margin","smooth","valley","zenith","liable","knees","narrow","boxing","vacant","current","nature","magic"],
+		lesson4: ["dad","wise","fox","lag","skill","moon","glass","keep","navy","flash","tiger","quick","sad","shell","fabric","lakh","youth","value","meat","smooth",	"fight","burn","half","judge","copycat","money","dr","loyal","magic","number","fall","user","zebra","faith","nature","hall","risk","nation","cut","offer","salsa","truth","major","maps","valley","early","define","young","action","milk","shall","great","cross","sixth","prison","seal","knees","author","manner","purpose","flag","gas","alert","park","leaf","desk","dull","hair","first","kids","shell","offer","tea","sail","life","lead","that","frogs","eight","looks","agreed","good","house","fifth","word","right","laugh","would","height","flight","three","useful","yellow","south","style","quality","large","yesterday","spiritual","box","boy","mat","nice","net","next","lamb","hint","lock","chart","body","doze","zero","neck","need","xray","meet","quick","burn","turn","smell","limbs","some","chase","maps","defects","print","number","action","humble","nation","exactly","cut","purpose","charity","define","miracle","brought","young","caught","many","universe","manner","money","margin","smooth","valley","zenith","liable","knees","narrow","boxing","vacant","current","nature","magic"],
+		lesson5:["357","405","999","2024","456","607","2","304","9090","708","852","321","000","21","951","7","444","506","65","111","8080","555","901","34","100","123","78","8","5","789","102","0","43","987","6060","333","1999","654","90","203","777","87","4","1","5678","12","6","9","2001","809","159","2025","222","7070","3","666","888","56","1234","09"] ,
+		lesson6:["!","@","#","$","%","^","&","*","(",")","-","="],
+		lesson7: ["Dada","Alfas","Alaska","Salsa","Gash","Slash","Hash","Dalda","Hall","Skaff","Slag","Glass","Da","Khaf","Dallas","Khallas","Falk","Sa","Jaal","Shalk","Alfa","Dall","Shall","Halk","Kafla","Ga","Sallad","Slags","Jaffa","Lass","Dass","Lag","Add","Flag","Gas","Fall"],
+		lesson8: ["Aid","Slide","Flies","Pares","Safe","Yule","Ride","Dialogue","Jealousy","Tailor","Europe","Quetta","Hillary","Sleek","Guide","Leaf","People","Equip","Earth","Jupiter","Roses","Yellow","Flight","Glory","Slowly","Author","Tuesday","Youth","April","Lily","Tulip","Tiger","Lotus","Growth","Ganges","Goal","Hour","Regard","Follow","Diesel","Fiddle","Failed","Pride","Feature","Years","Result","Farewell","Foods"],
+		lesson9: ["India","British","Kabir","Venus","Needle","Foreign","Cycle","Mainly","Million","Nation","Oxford","Calcutta","Nanak","Scale","Nylon","Beggar","Zigs","Negative","Over","Nature","Wizard","Inkpot","Remington","Switzerland","United","Studies","Lovely","Smooth","Opinion","Onion","Query","Zealous","Tundra","Village","Literacy","Education","Policies","Country","Machine","Hungry","Diwali","Beautiful","Knowledge","Blessing","Amazing"],
+		lesson10: ["Dada","Aid","India","Alaska","Slide","British","Salsa","Flies","Kabir","Gash","Safe","Venus","Slash","Yule","Needle","Hash","Ride","Foreign","Dalda","Dialogue","Cycle","Hall","Jealousy","Mainly","Skaff","Tailor","Million","Slag","Europe","Nation","Glass","Quetta","Oxford","Dallas","Hillary","Calcutta","Khallas","Sleek","Nanak","Falk","Guide","Scale","Jaal","Leaf","Nylon","Shalk","People","Beggar","Alfa","Equip","Zigs","Dall","Earth","Negative","Shall","Jupiter","Over","Halk","Roses","Nature","Kafla","Yellow","Wizard","Ga","Flight","Inkpot","Sallad","Glory","Remington","Slags","Slowly","Switzerland","Jaffa","Author","United","Lass","Tuesday","Studies","Dass","Youth","Lovely","Lag","April","Smooth","Add","Lily","Opinion","Flag","Tulip","Onion","Gas","Tiger","Query","Fall","Lotus","Zealous","Growth","Tundra","Ganges","Village","Goal","Literacy","Hour","Education","Regard","Policies","Follow","Country","Diesel","Machine","Fiddle","Hungry","Failed","Diwali","Pride","Beautiful","Feature","Knowledge","Years","Blessing","Result","Amazing","Farewell","Foods"],
+		lesson11: ["the","of","and","We","we","are","has","Then","then","there","thus","were","the","after","had","Must","The", "and", "was", "were", "their", "there", "where", "which","Would", "could", "should", "about", "again", "every", "first", "great",
+    "right", "three", "piece", "friend", "said", "does", "don't", "can't", "won't", "Your", "you're", "whose", "loose", "lose", "Quite", "quiet",
+    "Until", "truly", "among", "begin", "chose", "known", "women", "woman","meant", "month","music", "world", "house", "Young", "Study", "money", "Heart",    "break", "Class", "Watch", "Laugh", "learn", "Write", "wrong", "light",   "short", "small", "table", "chair", "field", "build", "Basic", "phone",    "place", "group", "other", "Never", "often", "maybe", "after", "water",
+    "Power", "Music", "Happy", "smile", "green", "brown", "black", "white"],
+		lesson12: ["all","ask","has","dad","sad","had","lad","lag","add","flag","gas","fall","hall","jaals","dada","jaffa","alaska","lass","alfa","kafla","dass","dash","flash","skaff","lakh","shall","gash","glass","alas","half","salad","glad","slag","kala","salsa","jags","wise","fly","tap","yak","see","ill","oil","owl","thats","wife","keep","safe","fail","less","tell","leaf","quill","post","joes","with","ugly","skill","silk","risk","hair","first","kids","user","shell","offer","tea","sail","seal","life","lead","desk","dull","that","frogs","alert","park","faith","its","lets","early","eagle","towel","whose","judge","their","other","eight","looks","agreed","good","house","fifth","word","loyal","right","truth","youth","should","laugh","would","height","flight","author","fight","great","three","tiger","useful","yellow","idiot","south","style","dutiful","quality","large","yesterday","spiritual","fox","box","boy","copycat","mat","milk","nice","net","next","meat","lamb","zila","hint","veto","lock","chart","body","dr","doze","zero","neck","need","xray","navy","moon","meet","value","zebra","mike","quick","sixth","burn","turn","smell","limbs","some","chase","maps","prison","defects","fabric","print","number","action","humble","nation","major","exactly","cut","cross","purpose","charity","define","miracle","brought","young","caught","many","universe","manner","money","margin","smooth","valley","zenith","liable","knees","narrow","boxing","vacant","current","nature","magic","Dada","Alfas","Alaska","Salsa","Gash","Slash","Hash","Dalda","Hall","Skaff","Slag","Glass","Da","Khaf","Dallas","Khallas","Falk","Sa","Jaal","Shalk","Alfa","Dall","Shall","Halk","Kafla","Ga","Sallad","Slags","Jaffa","Lass","Dass","Lag","Add","Flag","Gas","Fall","Aid","Slide","Flies","Pares","Safe","Yule","Ride","Dialogue","Jealousy","Tailor","Europe","Quetta","Hillary","Sleek","Guide","Leaf","People","Equip","Earth","Jupiter","Roses","Yellow","Flight","Glory","Slowly","Author","Tuesday","Youth","April","Lily","Tulip","Tiger","Lotus","Growth","Ganges","Goal","Hour","Regard","Follow","Diesel","Fiddle","Failed","Pride","Feature","Years","Result","Farewell","Foods","India","British","Kabir","Venus","Needle","Foreign","Cycle","Mainly","Million","Nation","Oxford","Calcutta","Nanak","Scale","Nylon","Beggar","Zigs","Negative","Over","Nature","Wizard","Inkpot","Remington","Switzerland","United","Studies","Lovely","Smooth","Opinion","Onion","Query","Zealous","Tundra","Village","Literacy","Education","Policies","Country","Machine","Hungry","Diwali","Beautiful","Knowledge","Blessing","Amazing"],
+		
+	
+  };
+
+
+
+	const lessonWordCounts = {
+	  lesson1: 120,
+	  lesson2: 120,
+	  lesson3: 120,
+	  lesson4: 100,
+	  lesson5: 90,   // numbers
+	  lesson6: 120,   // symbols
+	  lesson7: 90,
+	  lesson8: 100,
+	  lesson9: 120,
+	  lesson10: 120,
+	  lesson11: 120,
+	  lesson12: 150
+	};
+	  // ---------- DOM references ----------
+	  const lessonGrid = document.getElementById('lessonGrid');
+	  const lessonsSection = document.getElementById('lessonsSection');
+	  const testArea = document.getElementById('testArea');
+	  const backToLessons = document.getElementById('backToLessons');
+	  const lessonTitle = document.getElementById('lessonTitle');
+	  const textDisplay = document.getElementById('textDisplay');
+	  const correctCountEl = document.getElementById('correctCount');
+	  const wrongCountEl = document.getElementById('wrongCount');
+	  const accuracyEl = document.getElementById('accuracy');
+	  const wpmEl = document.getElementById('wpm');
+	  const timeEl = document.getElementById('time');
+	  const resultsBox = document.getElementById('results');
+	  const finalSummary = document.getElementById('finalSummary');
+	  const prevLessonBtn = document.getElementById('prevLessonBtn');
+	  const restartBtn = document.getElementById('restartBtn');
+	  const nextLessonBtn =
+document.getElementById('nextLessonBtn');
+	  const newTextBtn = document.getElementById('newTextBtn');
+
+	  // ---------- state ----------
+	  let errorMap = {}; // { a: 3, b: 1, 'e': 5 }
+	  let currentLesson = null;
+	  let currentString = "";
+	  let charSpans = []; // NodeList of char spans
+	  let cursor = 0; // char index
+	  let startedAt = 0;
+	  let timerId = null;
+	  let correctChars = 0;
+	  let wrongHits = 0;
+	  let running = false;
+
+	  // ---------- init: populate lesson grid ----------
+	  function makeLessonButton(key, idx){
+		const btn = document.createElement('button');
+		btn.className = 'lessonBtn';
+		btn.innerHTML = `<h3>Lesson ${idx}</h3><p>${key.replace('lesson','').trim()}</p>`;
+		btn.addEventListener('click', () => startLesson(key));
+		return btn;
+	  }
+	const lessonLabels = {
+		lesson1: "1. Home Row",
+		lesson2: "2. Top Row",
+		lesson3: "3. Bottom Row",
+		lesson4: "4. Mix Home, Top & Bottom Row",
+		lesson5: "5. Number Row",
+		lesson6: "6. Symbols",
+		lesson7: "7. Home Row with Shift",
+		lesson8: "8. Top Row with Shift",
+		lesson9: "9. Bottom Row with Shift",
+		lesson10: "10. Mixed Words with Shift",
+		lesson11: "11. Common Misspelt Words",
+		lesson12: "12. Mixed Words"
+		
+	};
+	(function fillGrid(){
+		const keys = Object.keys(lessons);
+		keys.forEach((k,i) => {
+			const btn = document.createElement('div');
+			btn.className = 'lessonBtn';
+
+			btn.innerHTML = `
+				<h3>${lessonLabels[k] || "Lesson " + (i+1)}</h3>
+				<p>${lessons[k].slice(0,5).join(', ')}...</p>
+			`;
+
+			btn.addEventListener('click', () => startLesson(k));
+			lessonGrid.appendChild(btn);
+		});
+	})();
+
+	  // ---------- generate random test string ----------
+	  function generateRandomText(lessonKey, wordCount = 60){
+		const pool = lessons[lessonKey] || lessons.lesson1;
+		const arr = [];
+		for(let i=0;i<wordCount;i++){
+		  const w = pool[Math.floor(Math.random()*pool.length)];
+		  arr.push(w);
+		}
+		return arr.join(' ');
+	  }
+
+	  // ---------- render text into spans (per character) ----------
+	  function renderText(str){
+		textDisplay.innerHTML = '';
+		charSpans = [];
+		for(let i=0;i<str.length;i++){
+		  const ch = str[i];
+		  const span = document.createElement('span');
+		  span.className = 'ch';
+		  // styling for spaces
+		  if(ch === ' ') { span.classList.add('space'); span.textContent = ' '; } // show a visible dot for spaces
+		  else span.textContent = ch;
+		  textDisplay.appendChild(span);
+		  charSpans.push({span, char: ch});
+		}
+		// set first as current
+		cursor = 0;
+		updateVisuals();
+	  }
+
+	  // ---------- visuals update ----------
+	  function updateVisuals(){
+		charSpans.forEach((obj, idx) => {
+		  obj.span.classList.remove('current','correct','incorrect','flash');
+		  // show actual space char for readability
+		  if(obj.char === ' '){
+			obj.span.textContent = ' ';
+		  } else obj.span.textContent = obj.char;
+		});
+		if(cursor < charSpans.length){
+		  const c = charSpans[cursor].span;
+		  c.classList.add('current');
+		  // ensure focused on display so user knows where to type
+		  textDisplay.scrollLeft = Math.max(0, c.offsetLeft - 20);
+		}
+	  }
+
+	  // ---------- start lesson ----------
+function startLesson(lessonKey){
+  currentLesson = lessonKey;
+  lessonTitle.textContent = lessonLabels[lessonKey] || lessonKey;
+
+  lessonsSection.style.display = 'none';
+  testArea.style.display = 'block';
+
+  // ✅ HIDE EXTRA SECTIONS
+  document.getElementById("extraSections").style.display = "none";
+
+  resultsBox.style.display = 'none';
+  resetStats();
+
+  const wordCount = lessonWordCounts[lessonKey] || 80;
+  currentString = generateRandomText(lessonKey, wordCount);
+
+  renderText(currentString);
+  textDisplay.focus();
+}
+
+	  // ---------- reset stats ----------
+	  function resetStats(){
+		stopTimer();
+		startedAt = 0;
+		errorMap = {};
+		correctChars = 0; wrongHits = 0; cursor = 0; running = false;
+		correctCountEl.textContent = '0';
+		wrongCountEl.textContent = '0';
+		accuracyEl.textContent = '0%';
+		wpmEl.textContent = '0';
+		timeEl.textContent = '00:00';
+		finalSummary.textContent = 'Complete the test to see results here.';
+	  }
+
+	  // ---------- timer ----------
+	  function startTimer(){
+		if(startedAt) return;
+		startedAt = Date.now();
+		running = true;
+		timerId = setInterval(updateTimer, 500);
+	  }
+	  function stopTimer(){
+		if(timerId) { clearInterval(timerId); timerId = null; }
+		running = false;
+	  }
+	  function updateTimer(){
+		if(!startedAt) return;
+		const elapsed = Math.floor((Date.now() - startedAt) / 1000);
+		const mm = String(Math.floor(elapsed/60)).padStart(2,'0');
+		const ss = String(elapsed%60).padStart(2,'0');
+		timeEl.textContent = `${mm}:${ss}`;
+		updateWPM();
+	  }
+
+	  // ---------- WPM & accuracy ----------
+	  function updateWPM(){
+		const elapsedMinutes = Math.max( (Date.now() - startedAt) / 60000, 1/60 );
+		const wpm = Math.round((correctChars / 5) / elapsedMinutes);
+		wpmEl.textContent = String(wpm);
+	  }
+	  function updateAccuracy(){
+		const totalHits = correctChars + wrongHits;
+		const acc = totalHits ? Math.round((correctChars / totalHits) * 100) : 0;
+		accuracyEl.textContent = acc + '%';
+	  }
+
+	  // ---------- key handling (letter-by-letter enforcement) ----------
+	  window.addEventListener('keydown', (e) => {
+	  
+	  
+	  
+			const ignoreKeys = [
+		  'Shift','Control','Alt','Meta','CapsLock','Tab',
+		  'ContextMenu','Escape'
+		];
+		
+		if (ignoreKeys.includes(e.key) || e.key.startsWith('Arrow')||e.getModifierState("AltGraph")) {
+		  return; // do nothing
+		}
+		 if(e.key === 'Backspace'){
+		  e.preventDefault();
+		  handleBackspace();
+		  return;
+		}
+		// if test area not open or no text, ignore
+		if(testArea.style.display !== 'block' || !charSpans.length) return;
+
+		// ignore modifier combos
+		if(e.ctrlKey || e.altKey || e.metaKey||e.shift) return;
+
+		// allow back to go back
+		if(e.key === 'Backspace'){
+		  e.preventDefault();
+		  if(cursor === 0) return;
+		  // if current wasn't finished, just move back
+		  // remove any marks on previous char
+		  const prev = charSpans[cursor-1];
+		  prev.span.classList.remove('correct','incorrect','flash');
+		  cursor = cursor - 1;
+		  // if the previous char was counted previously as correct, reduce correct count
+		  // (we'll deduce by checking class)
+		  // but better to recompute counts from DOM each time:
+		  recomputeCountsFromDOM();
+		  updateVisuals();
+		  return;
+		}
+
+		// if already completed, ignore other keys
+		if(cursor >= charSpans.length) return;
+
+		// start timer on first valid key press (only when not started)
+		if(!startedAt && e.key.length === 1){
+		  startTimer();
+		}
+
+		// expected char
+		const expected = charSpans[cursor].char;
+		// interpret enter as newline if exists
+		let pressed = e.key;
+		// convert ' ' (space) - when user presses space key, e.key === ' '
+		// normalize quotes and dashes? We keep it simple.
+		// For case-insensitive letters we accept either case:
+		// STRICT case-sensitive matching for letters
+	if (expected.length === 1 && /[a-zA-Z]/.test(expected)) {
+		if (pressed === expected) {
+			acceptCorrect();
+		} else {
+			markWrong();
+		}
+		e.preventDefault();
+		return;
+	} else {
+		  // non-letter characters (spaces, punctuation, numbers)
+		  // For spaces, we expect space key
+		  if(expected === ' '){
+			if(pressed === ' ') { acceptCorrect(); e.preventDefault(); return; }
+			else { markWrong(); e.preventDefault(); return; }
+		  } else {
+			// other cases: accept exact match (case-sensitive)
+			if(pressed === expected){ acceptCorrect(); e.preventDefault(); return; }
+			// also accept case-insensitive for letters in other unicode?
+			if(pressed.length === 1 && pressed.toLowerCase() === expected.toLowerCase()){
+			  acceptCorrect(); e.preventDefault(); return;
+			}
+			markWrong();
+			e.preventDefault();
+			return;
+		  }
+		}
+	  });
+
+	  function acceptCorrect(){
+
+    const obj = charSpans[cursor];
+
+    obj.span.classList.remove(
+        'current',
+        'flash',
+        'incorrect'
+    );
+
+    obj.span.classList.add('correct');
+
+    // FORCE GREEN
+    obj.span.style.color = "var(--green)";
+    obj.span.style.fontWeight = "bold";
+
+    cursor++;
+    correctChars++;
+
+    correctCountEl.textContent = correctChars;
+
+    updateAccuracy();
+    updateWPM();
+
+    if(cursor >= charSpans.length){
+        stopTimer();
+        showFinalResults();
+    }else{
+        updateVisuals();
+    }
+}
+
+function markWrong(){
+  wrongHits++;
+  wrongCountEl.textContent = String(wrongHits);
+  updateAccuracy();
+
+  const expected = charSpans[cursor].char;
+
+  // track error
+  if(expected){
+    errorMap[expected] = (errorMap[expected] || 0) + 1;
+  }
+
+  // flash UI
+  const obj = charSpans[cursor];
+  obj.span.classList.remove('flash');
+  void obj.span.offsetWidth;
+  obj.span.classList.add('flash','incorrect');
+}
+
+	  function recomputeCountsFromDOM(){
+		// useful after backspace: recompute counts
+		correctChars = 0; wrongHits = 0;
+		charSpans.forEach(obj => {
+		  if(obj.span.classList.contains('correct')) correctChars++;
+		  // incorrect class represents last wrong press but user didn't advance; we count wrongHits separately
+		});
+		// wrongHits remains whatever was tracked (we keep count since it's attempts)
+		correctCountEl.textContent = String(correctChars);
+		wrongCountEl.textContent = String(wrongHits);
+		updateAccuracy();
+		updateWPM();
+	  }
+
+	  // ---------- show final results (in bottom panel) ----------
+	  function showFinalResults(){
+		// compute final metrics
+		const elapsedSeconds = Math.max(1, Math.floor((Date.now() - startedAt) / 1000));
+		const minutes = elapsedSeconds / 60;
+		const wpm = Math.round((correctChars / 5) / Math.max(minutes, 1/60));
+		const totalHits = correctChars + wrongHits;
+		const accuracy = totalHits ? Math.round((correctChars / totalHits) * 100) : 0;
+			let errorHTML = "";
+
+const sortedErrors = Object.entries(errorMap)
+  .sort((a,b) => b[1] - a[1]);
+
+if(sortedErrors.length){
+  errorHTML = "<br><br><strong>Most Mistyped Characters:</strong><br>";
+  sortedErrors.forEach(([char,count]) => {
+    const displayChar = char === " " ? "[space]" : char;
+    errorHTML += `${displayChar} → ${count} times<br>`;
+  });
+}
+			
+			
+
+	finalSummary.innerHTML = `
+  <strong>Completed in ${formatTime(elapsedSeconds)} — WPM: ${wpm} — Accuracy: ${accuracy}%</strong>
+  <br>
+  Correct characters: ${correctChars} &nbsp; • &nbsp; Wrong hits: ${wrongHits}
+  ${errorHTML}
+`;
+		resultsBox.style.display = 'block';
+		// final update of stat boxes
+		wpmEl.textContent = String(wpm);
+		accuracyEl.textContent = accuracy + '%';
+	  }
+
+	  // ---------- utilities ----------
+	  function formatTime(totalSeconds){
+		const mm = String(Math.floor(totalSeconds/60)).padStart(2,'0');
+		const ss = String(totalSeconds%60).padStart(2,'0');
+		return `${mm}:${ss}`;
+	  }
+
+function goToNextLesson(){
+
+    const lessonKeys = Object.keys(lessons);
+
+    const currentIndex =
+        lessonKeys.indexOf(currentLesson);
+
+    if(currentIndex === -1) return;
+
+    const nextIndex = currentIndex + 1;
+
+    if(nextIndex >= lessonKeys.length){
+        alert("All lessons completed!");
+        return;
+    }
+
+    startLesson(
+        lessonKeys[nextIndex]
+    );
+}
+
+function goToPreviousLesson(){
+
+    const lessonKeys = Object.keys(lessons);
+
+    const currentIndex =
+        lessonKeys.indexOf(currentLesson);
+
+    if(currentIndex === -1) return;
+
+    const prevIndex = currentIndex - 1;
+
+    if(prevIndex < 0){
+        alert("This is the first lesson.");
+        return;
+    }
+
+    startLesson(
+        lessonKeys[prevIndex]
+    );
+}
+	  // ---------- UI actions ----------
+	backToLessons.addEventListener('click', () => {
+  testArea.style.display = 'none';
+  lessonsSection.style.display = 'block';
+
+  // ✅ SHOW AGAIN
+  document.getElementById("extraSections").style.display = "block";
+
+  resetStats();
+});
+
+	restartBtn.addEventListener('click', () => {
+  resetStats();
+  const wordCount = lessonWordCounts[currentLesson] || 80;
+  currentString = generateRandomText(currentLesson, wordCount);
+  renderText(currentString);
+  resultsBox.style.display = 'none';
+  textDisplay.focus();
+});
+nextLessonBtn.addEventListener('click', () => {
+    goToNextLesson();
+});
+prevLessonBtn.addEventListener('click', () => {
+    goToPreviousLesson();
+});
+
+	if (newTextBtn) newTextBtn.addEventListener('click', () => {
+  const wordCount = lessonWordCounts[currentLesson] || 80;
+  currentString = generateRandomText(currentLesson, wordCount);
+  renderText(currentString);
+  resetStats();
+  resultsBox.style.display = 'none';
+  textDisplay.focus();
+});
+
+	  // focus clickable textDisplay (so user sees cursor area)
+	  textDisplay.addEventListener('click', () => textDisplay.focus());
+
+	  // prevent selection & copy while typing to keep strictness (optional)
+	  textDisplay.addEventListener('selectstart', (e) => e.preventDefault());
+
+	  // initial accessibility focus
+	  setTimeout(()=> {
+		const firstBtn = lessonGrid.querySelector('.lessonBtn');
+		if(firstBtn) firstBtn.setAttribute('tabindex','0');
+	  }, 200);
+
+	})();
+
+		const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+	if (fullscreenBtn) fullscreenBtn.addEventListener('click', () => {
+	  if (!document.fullscreenElement) {
+		// Enter full screen
+		document.documentElement.requestFullscreen().catch(err => {
+		  alert(`Error enabling full-screen mode: ${err.message}`);
+		});
+		fullscreenBtn.textContent = "Exit Full Screen";
+	  } else {
+		// Exit full screen
+		document.exitFullscreen();
+		fullscreenBtn.textContent = "Full Screen";
+	  }
+	});
+
+
+
+	</script>
+		 </div>
+		
+
+	</body>
+	</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

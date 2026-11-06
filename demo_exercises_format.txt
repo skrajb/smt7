@@ -1,0 +1,25 @@
+Smartech Typing Tutor - how to add DEMO exercises (5-minute demo test)
+Paste these blocks into your GitHub exercise file and replace the sample text with your own demo exercise.
+Anything above the first ### line is ignored.
+
+### Demo English
+---
+Replace this sentence with your English demo exercise.
+---
+
+### Demo Punjabi
+---
+ਇੱਥੇ ਆਪਣਾ ਪੰਜਾਬੀ ਡੈਮੋ ਅਭਿਆਸ ਲਿਖੋ।
+---
+
+### Demo Hindi
+---
+यहाँ अपना हिंदी डेमो अभ्यास लिखें।
+---
+
+Notes:
+- The word "Demo" in the ### line is what makes it a demo.
+- The language word is optional: "### Demo" alone also works (the language is detected from the text).
+- More than one demo per language is fine. Extra words become the button name:
+  "### Demo English Banking" -> button "Demo Banking".
+- Demo exercises show only on the Demo page, never in the Chunk / Long Paragraph lists.

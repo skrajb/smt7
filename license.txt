@@ -1,0 +1,35 @@
+SMARTECH TYPING TUTOR - END USER LICENCE AGREEMENT
+
+Copyright (c) 2026 Smartech Education Computer Institute, Patiala. All rights reserved.
+
+Please read this agreement carefully. By installing or using Smartech Typing Tutor ("the Software") you agree to these terms.
+
+1. LICENCE
+Smartech Education Computer Institute ("the Publisher") grants you a non-exclusive, non-transferable licence to use the Software on one computer per activation code, for the course(s) and the period covered by that code.
+
+2. ACTIVATION AND TERM
+Each course is activated with its own code. A code is valid for the period shown on the Activation page (normally 90 days) and may be used on one computer at a time. A code may be moved to another computer by deactivating it on the first.
+
+3. RESTRICTIONS
+You may not copy, resell, rent, lease, sub-license or distribute the Software or any activation code; reverse-engineer, decompile or modify it; or remove or bypass the activation, licensing or copyright protections.
+
+4. OWNERSHIP
+The Software, its exercises, lessons, text, logos and design remain the property of the Publisher. This agreement gives you a right to use them, not to own them.
+
+5. DATA
+Test history, certificates and your name are stored only on your computer. Activation codes and a hashed Device ID are sent to the Publisher's activation service to enable the licence. Test results may be sent to the Publisher's results sheet to power the leaderboard.
+
+6. NO GUARANTEE OF RESULTS
+The Software is a typing practice tool. Exercises may not match any official examination. The Publisher does not guarantee any exam, employment or certification outcome.
+
+7. WARRANTY AND LIABILITY
+The Software is provided "as is", without warranty of any kind. To the extent permitted by law, the Publisher is not liable for any loss or damage arising from its use.
+
+8. TERMINATION
+The licence ends automatically if you break these terms. On termination you must stop using and delete the Software.
+
+9. GOVERNING LAW
+This agreement is governed by the laws of India. Courts at Patiala, Punjab have jurisdiction.
+
+10. CONTACT
+smartecheducation@gmail.com

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" href="icon.ico">
+<meta charset="UTF-8">
+<script src="protect.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage &amp; Print | Smartech Typing Tutor</title>
+<script src="themes.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="themes.css">
+<link rel="stylesheet" href="sidebar.css">
+<style>
+html, body { height: 100%; margin: 0; }
+body { font-family: var(--font-body); background: var(--bg); display: flex; flex-direction: column; min-height: 100vh; }
+.mg-wrap { width: 92%; max-width: 1100px; margin: 24px auto 40px; }
+.mg-card {
+  background: var(--card); border: 1px solid var(--border); border-top: 3px solid var(--gold);
+  border-radius: 16px; box-shadow: var(--shadow-md); padding: 20px 22px; margin-bottom: 18px;
+}
+.mg-card h2 { margin: 0 0 4px; border: none; padding: 0; color: var(--ink); font-size: 1.15rem; }
+.mg-card p { margin: 0 0 12px; color: var(--muted); font-size: 13.5px; line-height: 1.5; }
+.mg-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.mg-row .grow { flex: 1; min-width: 200px; }
+.mg-btn {
+  background: var(--ink); color: #fff; border: none; border-radius: 10px; padding: 10px 18px;
+  font-weight: 700; font-size: .9rem; cursor: pointer; text-decoration: none; display: inline-block;
+}
+.mg-btn.gold { background: var(--gold); color: #1a1a1a; }
+.mg-btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--border); font-weight: 600; padding: 7px 12px; font-size: .8rem; }
+.mg-btn:disabled { opacity: .6; cursor: wait; }
+.mg-big { font-size: 1.02rem; padding: 13px 24px; }
+.mg-stats { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 0; }
+.mg-stat { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; font-size: 13px; color: var(--ink); }
+.mg-stat b { font-size: 1.1rem; }
+.mg-tag { font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; background: var(--ink); color: #fff; }
+.mg-tag.free { background: #2e7d32; } .mg-tag.lock { background: #b26a00; } .mg-tag.off { background: #777; }
+.mg-rule { font-size: 12.5px; color: var(--muted); margin: 2px 0 10px; }
+.mg-exs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.mg-ex { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 10px; padding: 5px 6px 5px 12px; font-size: 13px; color: var(--ink); background: var(--bg); }
+.mg-ex a { background: var(--ink); color: #fff; text-decoration: none; border-radius: 7px; padding: 4px 10px; font-size: 12px; font-weight: 700; }
+.mg-warn { background: #fff3cd; color: #664d03; border-radius: 10px; padding: 8px 12px; font-size: 13px; margin-top: 8px; }
+.mg-src { font-size: 12px; color: var(--muted); word-break: break-all; }
+</style>
+<script>
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+    if (e.key === 'F12') e.preventDefault();
+    if (e.ctrlKey && e.shiftKey && e.key === 'I') e.preventDefault();
+    if (e.ctrlKey && e.key === 'u') e.preventDefault();
+});
+</script>
+<script src="profile.js"></script>
+<script src="sidebar.js"></script>
+</head>
+<body>
+<div class="main">
+<button id="menuToggle">&#9776;</button>
+<div class="mg-wrap" id="mg"><div class="mg-card"><p>Loading&hellip;</p></div></div>
+
+<script src="exercises.js"></script>
+<script src="tests.js"></script>
+<script>
+(function () {
+  var E = SmartechExercises, T = SmartechTests, esc = T.esc;
+  var root = document.getElementById("mg");
+  var enc = encodeURIComponent;
+
+  function render(msg) {
+    var tests = E.tests();
+    var all = E.all();
+    var known = {};
+    tests.forEach(function (t) { known[String(t.id).toLowerCase()] = true; });
+    var normal = all.filter(function (ex) { return ex.mode !== "test"; });
+    var tagged = all.filter(function (ex) { return ex.mode === "test"; });
+
+    // exercises tagged with an @ID that has no ### TEST block (typo check)
+    var orphans = {};
+    tagged.forEach(function (ex) {
+      (ex.tests || []).forEach(function (id) { if (!known[String(id).toLowerCase()]) orphans[id] = (orphans[id] || 0) + 1; });
+    });
+
+    var h = '';
+    h += '<div class="mg-card"><h2>Print everything</h2>' +
+      '<p>One A4 sheet per exercise with the Smartech Education header. Each exercise is shrunk automatically so the whole passage fits on its page.</p>' +
+      '<div class="mg-row"><a class="mg-btn gold mg-big" href="printexercise.html?all=1&back=manage.html">&#128424; Print all exercises (' + (tagged.length ? "" : "") + countAll(tests, normal) + ' sheets)</a>' +
+      '<button class="mg-btn ghost" id="reload" type="button">Reload from GitHub</button></div>' +
+      '<div class="mg-stats"><div class="mg-stat"><b>' + tests.length + '</b> test types</div>' +
+      '<div class="mg-stat"><b>' + tagged.length + '</b> test exercises</div>' +
+      '<div class="mg-stat"><b>' + normal.length + '</b> practice exercises</div></div>' +
+      (msg ? '<p style="margin-top:10px">' + esc(msg) + '</p>' : '') +
+      '<p class="mg-src" style="margin-top:10px">Source: ' + esc(E.getSourceUrl()) + '</p></div>';
+
+    if (Object.keys(orphans).length) {
+      h += '<div class="mg-warn"><b>Check your GitHub file:</b> exercises are tagged for test IDs that have no <code>### TEST</code> block: ' +
+        Object.keys(orphans).map(function (k) { return "@" + esc(k) + " (" + orphans[k] + ")"; }).join(", ") + ".</div>";
+    }
+
+    tests.forEach(function (t) {
+      var exs = E.testExercises(t.id);
+      var tag = T.followsLanguage(t) ? '<span class="mg-tag lock">Free &middot; per-language activation</span>' : !T.needsCode(t) ? '<span class="mg-tag free">Free</span>' : '<span class="mg-tag lock">Code type: ' + esc(t.code) + '</span>';
+      h += '<div class="mg-card"><div class="mg-row"><h2 class="grow">' + esc(t.name) + ' <small style="color:var(--muted);font-weight:600">(' + esc(t.id) + ')</small></h2>' + tag + '</div>' +
+        '<div class="mg-rule">' + esc(T.summary(t)) + ' &middot; ' + (t.mode === "chunk" ? "Chunk" : "Long paragraph") + ((t.langs && t.langs.length) ? " &middot; " + esc(t.langs.join(" + ")) : (t.lang ? " &middot; " + esc(t.lang) : "")) + '</div>';
+      if (t.langs && t.langs.length > 1) {
+        h += '<div class="mg-rule">' + t.langs.map(function (L) {
+          var r = T.ruleFor(t, L);
+          return '<b>' + esc(L) + ':</b> ' + esc(T.summary(r)) + ' (' + exs.filter(function (e) { return e.lang === L; }).length + ' exercises)';
+        }).join('<br>') + '</div>';
+      }
+      if (!exs.length) {
+        h += '<div class="mg-warn">No exercises are tagged <code>@' + esc(t.id) + '</code> yet.</div>';
+      } else {
+        h += '<div class="mg-row"><a class="mg-btn" href="printexercise.html?test=' + enc(t.id) + '&back=manage.html">&#128424; Print all ' + exs.length + ' exercise' + (exs.length === 1 ? "" : "s") + '</a></div><div class="mg-exs">';
+        var multi = !!(t.langs && t.langs.length > 1), cnt = {};
+        exs.forEach(function (ex, i) {
+          cnt[ex.lang] = (cnt[ex.lang] || 0) + 1;
+          var n = multi ? cnt[ex.lang] : i + 1;
+          h += '<span class="mg-ex">' + n + '. ' + (multi ? '[' + esc(ex.lang) + '] ' : '') + esc(ex.title || "Exercise") +
+            ' <a href="printexercise.html?test=' + enc(t.id) + (multi ? '&lang=' + enc(ex.lang) : '') + '&ex=' + n + '&back=manage.html">Print</a></span>';
+        });
+        h += '</div>';
+      }
+      h += '</div>';
+    });
+
+    if (normal.length) {
+      h += '<div class="mg-card"><h2>Practice exercises (Chunk / Long paragraph / Demo)</h2>' +
+        '<p>' + normal.length + ' exercises that are not tied to a test.</p>' +
+        '<a class="mg-btn" href="printexercise.html?set=normal&back=manage.html">&#128424; Print all practice exercises</a></div>';
+    }
+    root.innerHTML = h;
+    var r = document.getElementById("reload");
+    if (r) r.addEventListener("click", function () {
+      r.disabled = true; r.textContent = "Reloading\u2026";
+      E.refresh({ force: true }).then(function (ok) {
+        render(ok === false ? "Could not reach GitHub - showing the saved copy." : "Reloaded from GitHub.");
+      });
+    });
+  }
+
+  function countAll(tests, normal) {
+    var n = normal.length;
+    tests.forEach(function (t) { n += E.testExercises(t.id).length; });
+    return n;
+  }
+
+  render();
+  E.refresh().then(function (changed) { if (changed !== false) render(); });
+})();
+</script>
+</div>
+</body>
+</html>

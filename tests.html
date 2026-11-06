@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" href="icon.ico">
+<meta charset="UTF-8">
+<script src="protect.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Centre | Smartech Typing Tutor</title>
+<script src="themes.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="themes.css">
+<link rel="stylesheet" href="sidebar.css">
+<style>
+html, body { height: 100%; margin: 0; }
+body { font-family: var(--font-body); background: var(--bg); display: flex; flex-direction: column; min-height: 100vh; }
+
+.tc-wrap { width: 92%; max-width: 1100px; margin: 24px auto 40px; }
+.tc-lead {
+  margin: 0 0 22px; padding: 14px 18px; border: 1px solid var(--border); border-left: 4px solid var(--gold);
+  border-radius: 12px; background: var(--card); color: var(--muted); font-size: 14.5px; line-height: 1.6;
+}
+.tc-lead strong { color: var(--ink); }
+
+.tc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; align-items: start; }
+.tc-card {
+  display: block; text-decoration: none; color: inherit; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease;
+  background: var(--card); border: 1px solid var(--border); border-top: 3px solid var(--gold);
+  border-radius: 16px; box-shadow: var(--shadow-md); padding: 20px 20px 18px;
+}
+.tc-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg, 0 10px 28px rgba(0,0,0,.18)); }
+.tc-facts { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 5px; font-size: 13.5px; color: var(--ink); }
+.tc-facts b { display: inline-block; min-width: 82px; color: var(--muted); font-weight: 700; }
+.tc-go { font-weight: 800; color: var(--ink); font-size: 13.5px; }
+.tc-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+.tc-card h2 { margin: 0; border: none; padding: 0; color: var(--ink); font-size: 1.15rem; flex: 1; min-width: 0; }
+.tc-pill {
+  font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 999px; background: var(--ink); color: #fff; white-space: nowrap;
+}
+.tc-pill.free { background: #2e7d32; }
+.tc-pill.open { background: #2e7d32; }
+.tc-pill.lock { background: #b26a00; }
+.tc-desc { margin: 4px 0 10px; color: var(--muted); font-size: 13.5px; line-height: 1.5; }
+.tc-rule { margin: 0 0 14px; font-size: 13px; font-weight: 700; color: var(--ink); }
+.tc-meta { margin: 0 0 12px; font-size: 12px; color: var(--muted); }
+
+.tc-codebox { display: flex; gap: 8px; flex-wrap: wrap; }
+.tc-codebox input {
+  flex: 1; min-width: 150px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px;
+  font-size: 14px; letter-spacing: .04em; text-transform: uppercase; background: var(--card); color: var(--ink);
+}
+.tc-btn {
+  background: var(--ink); color: #fff; border: none; border-radius: 10px; padding: 10px 18px;
+  font-weight: 700; font-size: .9rem; cursor: pointer;
+}
+.tc-btn:disabled { opacity: .6; cursor: wait; }
+.tc-btn.ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); font-weight: 600; padding: 6px 12px; font-size: .8rem; }
+
+.tc-ex { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.tc-ex .exercise-btn {
+  background: var(--ink); color: #fff; border: none; border-radius: 10px; padding: 10px 16px;
+  font-weight: 700; font-size: .9rem; cursor: pointer; transition: transform .12s ease;
+}
+.tc-ex .exercise-btn:hover { transform: translateY(-2px); }
+.tc-refresh { background: var(--ink); color: #fff; border: 0; border-radius: 8px; padding: 8px 16px; font-weight: 700; font-size: 13px; cursor: pointer; }
+.tc-refresh:disabled { opacity: .6; cursor: wait; }
+.tc-empty { color: var(--muted); font-size: 13.5px; margin: 6px 0 0; }
+.tc-foot { margin-top: 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.tc-foot small { color: var(--muted); font-size: 12px; }
+</style>
+
+<script>
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('copy', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+    if (e.key === 'F12') e.preventDefault();
+    if (e.ctrlKey && e.shiftKey && e.key === 'I') e.preventDefault();
+    if (e.ctrlKey && e.key === 'u') e.preventDefault();
+    if (e.ctrlKey && e.key === 's') e.preventDefault();
+});
+</script>
+
+<script src="profile.js"></script>
+<script src="sidebar.js"></script>
+<script src="activation.js"></script>
+</head>
+<body>
+<div class="main">
+
+<button id="menuToggle">&#9776;</button>
+
+<div class="tc-wrap">
+
+  <p class="tc-lead">
+    <strong>How it works:</strong> each card is one exam type with its own <strong>time</strong> and
+    <strong>pass rule</strong>. Click a card to open its exercises (enter the <strong>access code</strong> from
+    your institute there if the test is locked), then pick the exercise you want to practise.
+  </p>
+
+  <p style="margin:0 0 14px"><button type="button" id="tcRefresh" class="tc-refresh">&#8635; Refresh tests</button>
+    <span id="tcRefreshMsg" class="tc-empty" style="margin-left:8px"></span></p>
+
+  <p id="tcInfo" class="tc-empty" style="margin:-6px 0 14px"></p>
+
+  <div class="tc-grid" id="tcGrid"><p class="tc-empty">Loading tests&hellip;</p></div>
+
+</div>
+
+<script src="exercises.js"></script>
+<script src="tests.js"></script>
+<script>
+(function () {
+  var grid = document.getElementById("tcGrid");
+  var T = window.SmartechTests, E = window.SmartechExercises;
+  var esc = T.esc;
+  var loading = true;
+
+  function statusOf(t) {
+    if (T.followsLanguage(t)) {
+      var exs0 = E.testExercises(t.id), ls = langsOf(t, exs0);
+      var okL = ls.filter(function (L) { return T.langUnlocked(t, L); });
+      return okL.length
+        ? { cls: "open", label: "Free \u00B7 " + okL.join(" + ") + " activated", unlocked: true }
+        : { cls: "lock", label: "Activate " + (ls.join(" / ") || "a language"), unlocked: false };
+    }
+    if (!T.needsCode(t)) return { cls: "free", label: "Free", unlocked: true };
+    var info = getActivationInfo(t.code);
+    if (T.isUnlocked(t)) {
+      var d = info.daysLeft;
+      return { cls: "open", label: d === null ? "Unlocked" : (d + (d === 1 ? " day left" : " days left")), unlocked: true, info: info };
+    }
+    return { cls: "lock", label: info.expired ? "Expired" : "Code needed", unlocked: false, info: info };
+  }
+
+  // Languages of a test, in the order written in "language:"; otherwise in the order its exercises appear.
+  function langsOf(t, exs) {
+    if (t.langs && t.langs.length) return t.langs;
+    var out = [];
+    (exs || []).forEach(function (e) { if (e.lang && out.indexOf(e.lang) === -1) out.push(e.lang); });
+    return out;
+  }
+
+  function render() {
+    var tests = E.tests();
+    if (!tests.length) {
+      grid.innerHTML = '<p class="tc-empty">' + (loading
+        ? "Loading tests\u2026"
+        : (navigator.onLine === false
+            ? "You are offline. Connect to the internet once so the tests can download."
+            : "No tests are available yet. Ask your institute to add them.")) + "</p>";
+      return;
+    }
+    grid.innerHTML = "";
+    tests.forEach(function (t) { grid.appendChild(card(t)); });
+  }
+
+  // Introductory card: what the test is, its rule, its lock status. Click = open its exercises.
+  function card(t) {
+    var st = statusOf(t);
+    var n = E.testExercises(t.id).length;
+    var el = document.createElement("a");
+    el.className = "tc-card";
+    el.href = "testexercises.html?id=" + encodeURIComponent(t.id);
+    var exs = E.testExercises(t.id);
+    var langs = langsOf(t, exs);
+    var lang = langs.map(function (L) { return '<span class="tc-pill">' + esc(L) + "</span>"; }).join("");
+    var multi = langs.length > 1;
+    var perLang = multi ? langs.map(function (L) {
+      var r = T.ruleFor(t, L), cnt = exs.filter(function (e) { return e.lang === L; }).length;
+      return "<li><b>" + esc(L) + "</b> " + r.minutes + " min &middot; " +
+        esc(T.summary(r).replace(/^\d+(\.\d+)? min \u00B7 /, "")) + " &middot; " + (loading && !cnt ? "\u2026" : cnt) + " exercises</li>";
+    }).join("") : "";
+    el.innerHTML =
+      '<div class="tc-top"><h2>' + esc(t.name) + "</h2>" + lang + "</div>" +
+      (t.desc ? '<p class="tc-desc">' + esc(t.desc) + "</p>" : "") +
+      '<ul class="tc-facts">' +
+        (multi ? perLang :
+          "<li><b>Time</b> " + esc(t.minutes) + " min</li>" +
+          "<li><b>Pass rule</b> " + esc(T.summary(t).replace(/^\d+(\.\d+)? min \u00B7 /, "")) + "</li>") +
+        "<li><b>Format</b> " + (t.mode === "chunk" ? "Chunk typing" : "Long paragraph") + "</li>" +
+        (multi ? "" : "<li><b>Exercises</b> " + (loading && !n ? "\u2026" : n) + "</li>") +
+      "</ul>" +
+      '<div class="tc-foot"><span class="tc-pill ' + st.cls + '">' + esc(st.label) + '</span><span class="tc-go">Open exercises &rarr;</span></div>';
+    return el;
+  }
+
+  var rb = document.getElementById("tcRefresh"), rm = document.getElementById("tcRefreshMsg");
+  rb.addEventListener("click", function () {
+    rb.disabled = true; rm.textContent = "Downloading the latest tests\u2026";
+    E.refresh({ force: true }).then(function (ok) {
+      rb.disabled = false; loading = false; render();
+      infoLine();
+      rm.textContent = ok ? "Updated just now." : (navigator.onLine === false ? "You are offline." : "Could not download. Check the internet and try again.");
+    });
+  });
+
+  // Small status line: which file the list came from and when it was last downloaded
+  function infoLine() {
+    var t = 0;
+    try { t = Number(localStorage.getItem("smartechExercisesFetchedAt")) || 0; } catch (e) {}
+    var src = "";
+    try { src = E.getSourceUrl(); } catch (e) {}
+    var short = src.replace(/^https?:\/\/(raw\.githubusercontent\.com\/)?/, "").replace("refs/heads/", "");
+    document.getElementById("tcInfo").textContent = E.tests().length + " test(s) loaded" +
+      (t ? " \u00B7 downloaded " + new Date(t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "") +
+      (short ? " \u00B7 source: " + short : "");
+  }
+
+  render(); infoLine();                       // cached list first (works offline)
+  E.refresh().then(function () {
+    loading = false;
+    render(); infoLine();
+    // Quietly re-check unlocked codes with the sheet (blocked / expired codes lock again)
+    return Promise.all(E.tests().map(function (t) { return T.revalidate(t); }));
+  }).then(function (changed) {
+    if (changed && changed.indexOf(true) !== -1) render();
+  });
+})();
+</script>
+
+</div>
+</body>
+</html>

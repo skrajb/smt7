@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="protect.js"></script>
+  <link rel="icon" type="image/png" href="icon.ico">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Progress | Smartech Typing Tutor</title>
+  <script src="themes.js"></script>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="themes.css">
+  <link rel="stylesheet" href="sidebar.css">
+  <script src="profile.js"></script>
+  <script src="sidebar.js"></script>
+  <script src="sheet-sync.js"></script>
+<script src="db.js"></script>
+  <style>
+  #certificateSection {
+    display: none;
+}
+    body{
+      font-family:var(--font-body);
+      margin:0; background:var(--bg); color:var(--text);
+    }
+    main{max-width:1100px;margin:28px auto;padding:0 20px 60px}
+    h1{color:var(--ink); font-size:28px; font-family:var(--font-heading);}
+    .statsGrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin:20px 0;}
+    .stat{
+      background:var(--card); border-radius:14px; padding:18px;
+      box-shadow:0 8px 24px rgba(16,24,40,0.06); border:1px solid rgba(2,41,95,0.06);
+    }
+    .stat h3{margin:0 0 6px; font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em;}
+    .stat .value{font-size:26px; font-weight:700; color:var(--ink); font-family:var(--font-heading);}
+    .card{
+      background:var(--card); border-radius:14px; padding:22px; margin-bottom:24px;
+      box-shadow:0 8px 24px rgba(16,24,40,0.06); border:1px solid rgba(2,41,95,0.06);
+    }
+    table{width:100%; border-collapse:collapse; font-size:14px;}
+    th, td{padding:10px 10px; text-align:left; border-bottom:1px solid #eef0f4;}
+    th{color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase;}
+    .pass{color:var(--green); font-weight:700;}
+    .fail{color:var(--red); font-weight:700;}
+    .toolbar{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px;}
+    .btn{background:var(--accent); color:#fff; padding:10px 16px; border-radius:10px; border:none; cursor:pointer; font-weight:600; margin-top:0;}
+    .btn.danger{background:var(--red);}
+    .btn.ghost{background:transparent; color:var(--accent); border:1px solid rgba(2,41,95,0.15); box-shadow:none;}
+    .empty{color:var(--muted); padding:20px 0;}
+
+    .certGrid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; }
+    .cert{
+      position:relative; border-radius:14px; padding:20px;
+      background:linear-gradient(135deg, var(--ink), var(--ink-700)); border-top:3px solid var(--gold);
+      color:#fff; overflow:hidden;
+    }
+    .cert::after{
+      content:"🏆"; position:absolute; right:14px; top:10px; font-size:2rem; opacity:.35;
+    }
+    .cert .lang{ font-size:12px; text-transform:uppercase; letter-spacing:.06em; opacity:.85; }
+    .cert .name{ font-family:var(--font-heading); font-weight:700; font-size:1.15rem; margin:4px 0 10px; }
+    .cert .meta{ font-size:13px; opacity:.9; }
+
+    .todayGrid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-bottom:18px; }
+    .todayCard{
+      border-radius:14px; padding:18px; color:#fff; position:relative; overflow:hidden;
+    }
+    .todayCard.speed{ background:linear-gradient(135deg,var(--ink),var(--accent)); }
+    .todayCard.accuracy{ background:linear-gradient(135deg,#0f5c3c,var(--green)); }
+    .todayCard h3{ margin:0 0 8px; font-size:12px; text-transform:uppercase; letter-spacing:.06em; opacity:.85; }
+    .todayCard .name{ font-family:var(--font-heading); font-weight:700; font-size:1.2rem; margin-bottom:4px; }
+    .todayCard .value{ font-size:1.6rem; font-weight:800; }
+    .todayCard .sub{ font-size:12px; opacity:.85; margin-top:4px; }
+    .sheetStatus{ font-size:12px; color:var(--muted); margin-top:-6px; margin-bottom:14px; }
+  </style>
+</head>
+<body>
+<div class="main">
+  <button id="menuToggle">☰</button>
+
+  <main>
+    <div class="statsGrid" id="statsGrid"></div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">📅 Today's Leaderboard <span style="font-weight:400; color:var(--muted); font-size:13px;">(from Google Sheet — all centre computers)</span></h3>
+      <div class="sheetStatus" id="todayStatus">Loading today's results…</div>
+      <div class="todayGrid" id="todayTopCards"></div>
+      <div id="todaySampleTable"></div>
+    </div>
+
+    <div class="card">
+      <div class="toolbar">
+        <button class="btn" onclick="SmartechDB.downloadCSV()">⬇ Export History (CSV)</button>
+        <button class="btn danger" onclick="clearHistory()">🗑 Clear History</button>
+      </div>
+      <h3>Test History <span style="font-weight:400; color:var(--muted); font-size:13px;">(last 3 days — older results are removed automatically)</span></h3>
+      <div id="historyTable"></div>
+    </div>
+
+<div class="card" id="certificateSection">
+    <h3 style="margin-top:0;">🏆 Certificates Earned</h3>
+    <div class="certGrid" id="certGrid"></div>
+</div>
+  </main>
+</div>
+
+<script>
+function render() {
+  const stats = SmartechDB.getStats();
+  const results = SmartechDB.getResults();
+  const certs = SmartechDB.getCertificates();
+
+  // Stat cards
+  const statsGrid = document.getElementById("statsGrid");
+  if (stats.totalTests === 0) {
+    statsGrid.innerHTML = '<div class="stat"><h3>Total Tests</h3><div class="value">0</div></div>';
+  } else {
+    let html = `<div class="stat"><h3>Total Tests</h3><div class="value">${stats.totalTests}</div></div>`;
+    Object.keys(stats.byLanguage).forEach(lang => {
+      const b = stats.byLanguage[lang];
+      html += `
+        <div class="stat"><h3>${lang} — Best Speed</h3><div class="value">${b.bestSpeed} WPM</div></div>
+        <div class="stat"><h3>${lang} — Avg Accuracy</h3><div class="value">${b.avgAccuracy}%</div></div>`;
+    });
+    statsGrid.innerHTML = html;
+  }
+
+  // History table
+  const historyEl = document.getElementById("historyTable");
+  if (!results.length) {
+    historyEl.innerHTML = '<p class="empty">No tests in the last 3 days. Head to the English or Punjabi Typing Course to get started.</p>';
+  } else {
+    let rows = results.slice().reverse().map(r => `
+      <tr>
+        <td>${new Date(r.timestamp).toLocaleString()}</td>
+        <td>${r.name || "-"}</td>
+        <td>${r.language || "-"}</td>
+        <td>${r.isDemo ? "Demo" : (r.exerciseNo ? "Exercise " + r.exerciseNo : "-")}</td>
+        <td>${r.actualSpeed ?? r.grossSpeed ?? "-"} WPM</td>
+        <td>${r.accuracy ?? "-"}%</td>
+        <td class="${String(r.result).toLowerCase()==='pass' ? 'pass' : (r.isDemo ? '' : 'fail')}">${r.result || "-"}</td>
+      </tr>`).join("");
+    historyEl.innerHTML = `
+      <table>
+        <thead><tr><th>Date</th><th>Name</th><th>Language</th><th>Exercise</th><th>Speed</th><th>Accuracy</th><th>Result</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  // Certificates
+  const certGrid = document.getElementById("certGrid");
+  if (!certs.length) {
+    certGrid.innerHTML = '<p class="empty">No certificates yet — pass a typing test to earn your first one.</p>';
+  } else {
+    certGrid.innerHTML = certs.slice().reverse().map(c => `
+      <div class="cert">
+        <div class="lang">${c.language || "-"} Typing Certificate</div>
+        <div class="name">${c.name || "Candidate"}</div>
+        <div class="meta">${c.exerciseNo ? "Exercise " + c.exerciseNo + " · " : ""}${c.speed || 0} WPM · ${c.accuracy || 0}% accuracy</div>
+        <div class="meta">${new Date(c.date).toLocaleDateString()}</div>
+      </div>`).join("");
+  }
+}
+
+function clearHistory() {
+  if (!confirm("This will permanently delete your saved test history on this device. Continue?")) return;
+  SmartechDB.clearResults();
+  render();
+}
+
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+async function renderTodayLeaderboard() {
+  const statusEl = document.getElementById("todayStatus");
+  const cardsEl = document.getElementById("todayTopCards");
+  const sampleEl = document.getElementById("todaySampleTable");
+
+  if (!window.SmartechSheet || !window.SmartechSheet.isConfigured()) {
+    statusEl.textContent = "Google Sheet sync isn't configured yet — set GOOGLE_SHEET_ENDPOINT in sheet-sync.js.";
+    cardsEl.innerHTML = "";
+    sampleEl.innerHTML = "";
+    return;
+  }
+
+  try {
+    const data = await window.SmartechSheet.getTodayLeaderboard();
+    const total = data.totalToday || 0;
+
+    statusEl.textContent = total
+      ? `${total} test${total === 1 ? "" : "s"} recorded today across the centre.`
+      : "No tests recorded yet today.";
+
+    if (!total) {
+      cardsEl.innerHTML = "";
+      sampleEl.innerHTML = '<p class="empty">Once someone takes a test today, their results will show up here.</p>';
+      return;
+    }
+
+    const ts = data.topSpeed || {};
+    const ta = data.topAccuracy || {};
+    cardsEl.innerHTML = `
+      <div class="todayCard speed">
+        <h3> Highest Speed Today</h3>
+        <div class="name">${escapeHtml(ts.name || "-")}</div>
+        <div class="value">${ts.speed ?? "-"} WPM</div>
+        <div class="sub">${ts.accuracy ?? "-"}% accuracy · ${escapeHtml(ts.language || "-")}</div>
+      </div>
+      <div class="todayCard accuracy">
+        <h3>🎯 Highest Accuracy Today</h3>
+        <div class="name">${escapeHtml(ta.name || "-")}</div>
+        <div class="value">${ta.accuracy ?? "-"}%</div>
+        <div class="sub">${ta.speed ?? "-"} WPM · ${escapeHtml(ta.language || "-")}</div>
+      </div>`;
+
+    const sample = Array.isArray(data.sample) ? data.sample.slice(0, 3) : [];
+    if (!sample.length) {
+      sampleEl.innerHTML = "";
+    } else {
+      const rows = sample.map((r) => `
+        <tr>
+          <td>${escapeHtml(r.name || "-")}</td>
+          <td>${escapeHtml(r.language || "-")}</td>
+          <td>${r.speed ?? "-"} WPM</td>
+          <td>${r.accuracy ?? "-"}%</td>
+        </tr>`).join("");
+      sampleEl.innerHTML = `
+        <h3 style="font-size:14px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em;">3 Students Tested Today</h3>
+        <table>
+          <thead><tr><th>Name</th><th>Language</th><th>Speed</th><th>Accuracy</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+    }
+  } catch (err) {
+    console.warn("Could not load today's leaderboard:", err);
+    statusEl.textContent = "Couldn't reach the Google Sheet (check your internet connection).";
+    cardsEl.innerHTML = "";
+    sampleEl.innerHTML = "";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  render();
+  renderTodayLeaderboard();
+});
+</script>
+</body>
+</html>

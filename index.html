@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<script src="protect.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Dashboard | Smartech Typing Tutor</title>
+
+  <script src="themes.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="themes.css">
+  <link rel="stylesheet" href="sidebar.css" />
+
+  <script src="activation.js"></script>
+  <script src="sheet-sync.js"></script>
+<script src="db.js"></script>
+  <script src="exercises.js"></script>
+  <script src="tests.js"></script>
+  <script src="profile.js"></script>
+  <script src="sidebar.js"></script>
+
+  <style>
+    /* Dashboard (redesigned) - colours come from the theme tokens, so every theme works */
+    .dx-wrap { width: 92%; max-width: 1240px; margin: 0 auto; padding-bottom: 20px; }
+
+    /* ---------- hero ---------- */
+    .dx-hero {
+      position: relative; overflow: hidden; color: #fff;
+      background: linear-gradient(120deg, #081627, var(--ink) 55%, var(--ink-600, var(--ink)));
+      border-radius: 0 0 28px 28px; padding: 38px 6% 34px;
+      display: flex; align-items: center; justify-content: space-between; gap: 28px; flex-wrap: wrap;
+    }
+    .dx-hero::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 50% 70% at 88% 10%, rgba(255,255,255,.12), transparent 60%),
+                  radial-gradient(ellipse 40% 60% at 5% 100%, rgba(255,255,255,.07), transparent 60%); }
+    .dx-hero-main { position: relative; flex: 1 1 420px; min-width: 280px; }
+    .dx-eyebrow { font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-light); margin: 0 0 8px; }
+    .dx-hero h1 { font-family: var(--font-heading); font-size: clamp(1.7rem, 3.2vw, 2.4rem); line-height: 1.15; margin: 0 0 10px; color: #fff; }
+    .dx-hero h1 span { color: var(--gold-light); }
+    .dx-hero p.dx-sub { margin: 0; max-width: 560px; color: rgba(255,255,255,.8); line-height: 1.6; font-size: .98rem; }
+    .dx-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    .dx-btn { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 700; font-size: .92rem;
+      padding: 11px 20px; border-radius: 999px; transition: transform .15s ease, background .15s ease; }
+    .dx-btn:hover { transform: translateY(-2px); }
+    .dx-btn.gold { background: var(--gold); color: var(--ink); box-shadow: 0 8px 20px rgba(0,0,0,.25); }
+    .dx-btn.gold:hover { background: var(--gold-light); }
+    .dx-btn.ghost { background: rgba(255,255,255,.1); color: #fff; border: 1.5px solid rgba(255,255,255,.35); }
+    .dx-btn.ghost:hover { background: rgba(255,255,255,.2); }
+    .dx-btn svg { width: 18px; height: 18px; }
+    .dx-hero-side { position: relative; flex: 0 1 260px; text-align: center; }
+    .dx-hero-side img { width: 100%; max-width: 240px; filter: drop-shadow(0 14px 28px rgba(0,0,0,.35)); }
+    .dx-quote { position: relative; flex-basis: 100%; margin: 4px 0 0; padding: 10px 16px; border-left: 3px solid var(--gold-light);
+      color: rgba(255,255,255,.78); font-style: italic; font-family: var(--font-heading); transition: opacity .4s ease; min-height: 1.6em; }
+
+    /* ---------- exam strip (marquee, right to left, one card per exam) ---------- */
+    .dx-sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 28px 0 12px; }
+    .dx-sec-head h2 { margin: 0; border: none; padding: 0; font-size: 1.25rem; color: var(--ink); font-family: var(--font-heading); }
+    .dx-sec-head small { color: var(--muted); font-size: 13px; }
+    .dx-sec-head a { color: var(--accent); font-weight: 700; font-size: 14px; text-decoration: none; }
+    .dx-sec-head a:hover { text-decoration: underline; }
+    .dx-marquee { position: relative; overflow: hidden; border-radius: 18px; padding: 6px 0 10px;
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+              mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent); }
+    .dx-track { display: flex; gap: 16px; width: max-content; will-change: transform; }
+    .dx-exam {
+      flex: 0 0 auto; width: 330px; display: flex; flex-direction: column; gap: 10px; text-decoration: none; color: inherit;
+      background: var(--card); border: 1px solid var(--border); border-top: 4px solid var(--gold);
+      border-radius: 18px; padding: 16px 18px; box-shadow: var(--shadow-sm); transition: box-shadow .15s ease, transform .15s ease;
+    }
+    .dx-exam:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
+    .dx-exam h3 { margin: 0; font-size: 1.05rem; color: var(--ink); line-height: 1.25; font-family: var(--font-heading); }
+    .dx-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .dx-pill { font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; background: var(--ink); color: #fff; white-space: nowrap; }
+    .dx-pill.time { background: var(--gold-soft); color: var(--ink); border: 1px solid var(--border); }
+    .dx-rule { font-size: 12.5px; color: var(--muted); line-height: 1.45; min-height: 2.9em; }
+    .dx-exam-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 10px; border-top: 1px solid var(--border); }
+    .dx-status { font-size: 12px; font-weight: 800; }
+    .dx-status.open, .dx-status.free { color: #2e7d32; }
+    .dx-status.lock { color: #b26a00; }
+    .dx-go { font-weight: 800; font-size: 13px; color: var(--ink); }
+    .dx-empty { color: var(--muted); font-size: 14px; padding: 18px; background: var(--card); border: 1px dashed var(--border); border-radius: 14px; }
+    .dx-marquee { display: block; width: 100%; }
+
+    /* ---------- progress + leaderboard ---------- */
+    .dx-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 18px; align-items: start; margin-top: 8px; }
+    @media (max-width: 920px) { .dx-grid { grid-template-columns: 1fr; } }
+    .dx-panel { background: var(--card); border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow-sm); padding: 20px 22px; }
+    .dx-panel h2 { margin: 0 0 14px; border: none; padding: 0; font-size: 1.1rem; color: var(--ink); font-family: var(--font-heading); display: flex; align-items: center; gap: 8px; }
+    .dx-panel h2::before { content: ""; width: 4px; height: 18px; border-radius: 2px; background: var(--gold); }
+    .mini-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+    .mini-stat { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 14px; text-align: left; }
+    .mini-stat .val { font-size: 1.55rem; font-weight: 800; color: var(--ink); font-family: var(--font-heading); line-height: 1.1; }
+    .mini-stat .lbl { font-size: 11.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 3px; }
+    .dx-panel .dx-more { display: inline-block; margin-top: 14px; color: var(--accent); font-weight: 700; font-size: 14px; text-decoration: none; }
+    .dx-panel .dx-more:hover { text-decoration: underline; }
+    #leaderboardTable { border-collapse: collapse; font-size: 14px; }
+    #leaderboardTable th { text-align: left; font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--border); }
+    #leaderboardTable td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
+    #leaderboardStatus { color: var(--muted); font-size: 14px; }
+
+    /* ---------- formula strip ---------- */
+    .dx-formula { margin-top: 18px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 18px;
+      background: var(--gold-soft); border: 1px solid var(--border); border-radius: 14px; padding: 12px 18px; color: var(--ink); font-size: 14px; }
+    .dx-formula b { font-family: var(--font-heading); }
+    .dx-formula i { color: var(--muted); }
+  </style>
+</head>
+
+<body>
+<div class="main">
+
+  <!-- ================== HERO ================== -->
+  <section class="dx-hero">
+    <div class="dx-hero-main">
+      <p class="dx-eyebrow">Smartech Education Computer Institute</p>
+      <h1 id="dxHello">Welcome to <span>Smartech Typing Tutor</span></h1>
+      <p class="dx-sub">Exam-style typing practice for PSSSB, High Court, SSC and other recruitment tests. Real timing, real pass rules, and your progress saved on this computer.</p>
+      <div class="dx-actions">
+        <a href="tests.html" class="dx-btn gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9z"/><path d="M8.5 12.5l2 2 4-4.5M8.5 17.5h7"/></svg>Test Centre</a>
+        <a href="demo.html" class="dx-btn ghost">5-Min Demo</a>
+        <a href="engtutor.html" class="dx-btn ghost">English</a>
+        <a href="pbitutor.html" class="dx-btn ghost">Punjabi</a>
+        <a href="hinditutor.html" class="dx-btn ghost">Hindi</a>
+        <a href="manage.html" class="dx-btn ghost">Manage</a>
+      </div>
+    </div>
+    <div class="dx-hero-side"><img src="KB.png" alt="Typing practice illustration"></div>
+    <div class="dx-quote" id="quoteBox"></div>
+  </section>
+
+  <div class="dx-wrap">
+
+    <!-- ================== EXAMS (marquee) ================== -->
+    <div class="dx-sec-head">
+      <h2>Exams</h2>
+      <a href="tests.html">Open Test Centre &rarr;</a>
+    </div>
+    <!-- real <marquee>: cards glide RIGHT to LEFT; pointing at it pauses it -->
+    <marquee class="dx-marquee" id="dxMarquee" behavior="scroll" direction="LEFT" scrollamount="3" scrolldelay="20"
+             onmouseover="this.stop()" onmouseout="this.start()" aria-label="Available exams">
+      <div class="dx-track" id="dxTrack"><div class="dx-empty">Loading exams&hellip;</div></div>
+    </marquee>
+
+    <!-- ================== PROGRESS + LEADERBOARD ================== -->
+    <div class="dx-grid">
+      <div class="dx-panel" id="progressSnapshotCard">
+        <h2>Your progress</h2>
+        <div class="mini-stats" id="miniStats"></div>
+        <a href="progress.html" class="dx-more">View full progress &rarr;</a>
+      </div>
+
+      <div class="dx-panel">
+        <h2>Today's Top 10</h2>
+        <div id="leaderboardStatus">Loading...</div>
+        <table id="leaderboardTable" style="display:none;" width="100%">
+          <thead>
+            <tr><th>Rank</th><th>Name</th><th>Language</th><th>Speed</th><th>Accuracy</th></tr>
+          </thead>
+          <tbody id="leaderboardBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ================== FORMULA ================== -->
+    <div class="dx-formula">
+      <b>Gross Speed (WPM) = Total Characters &divide; 5 &divide; Time in Minutes</b>
+      <i>1 word = 5 characters</i>
+    </div>
+
+    <!-- ================== ADMIN: MANAGE EXERCISES (hidden by default) ================== -->
+    <div class="card" id="typing-importance" style="display:none;">
+      <h2>Manage Exercises</h2>
+      <p style="color:var(--muted);font-size:14px;">
+        Exercises download automatically from the GitHub file below and are shared by the Chunk and Long Paragraph pages.
+        In that file, <code>### English</code> shows an exercise in both lists, <code>### English Chunk</code> in the Chunk list only,
+        and <code>### English Paragraph</code> in the Long Paragraph list only (same for Punjabi and Hindi).
+      </p>
+
+      <div>
+        <input type="file" id="exerciseFile">
+        <button onclick="loadExercisesFromFile()">Add Exercises From File</button>
+      </div>
+
+      <div>
+        <input type="text" id="exerciseFileUrl" placeholder="Paste exercises file URL">
+        <button onclick="loadExercisesFromUrl()">Import Exercises from URL</button>
+      </div>
+      <p id="exerciseSourceInfo" style="font-size:13px;color:var(--muted);"></p>
+
+      <h3 style="margin-top:15px;">Add a special exercise on this computer</h3>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <select id="exerciseLang">
+          <option>English</option>
+          <option>Punjabi</option>
+          <option>Hindi</option>
+        </select>
+        <select id="exerciseMode">
+          <option value="both">Chunk and Long Paragraph</option>
+          <option value="chunk">Chunk only</option>
+          <option value="paragraph">Long Paragraph only</option>
+        </select>
+      </div>
+      <input type="text" id="exerciseTitle" placeholder="Exercise title">
+      <textarea id="exerciseText" rows="5" placeholder="Exercise text"></textarea>
+      <button onclick="addExercise()">Add Exercise</button>
+
+      <div id="exerciseListCustom"></div>
+      <br>
+      <button class="delete-btn" onclick="deleteAllExercises()" id="deleteAllButton">Delete My Added Exercises</button>
+    </div>
+
+
+    <p style="text-align:center;color:var(--muted);font-size:13px;margin:26px 0 10px;">
+      &copy; 2026 Smartech Education Computer Institute &mdash; All Rights Reserved.
+    </p>
+  </div>
+
+  <script>
+  /* Progress snapshot (reads SmartechDB written by the test pages) */
+  document.addEventListener("DOMContentLoaded", () => {
+    const hello = document.getElementById('dxHello');
+    try {
+      const n = window.SmartechProfile && SmartechProfile.getName();
+      if (hello && n) hello.innerHTML = 'Welcome back, <span>' + String(n).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])) + '</span>';
+    } catch (e) {}
+
+    const miniStats = document.getElementById('miniStats');
+    if (miniStats && window.SmartechDB) {
+      const stats = SmartechDB.getStats();
+      if (!stats.totalTests) {
+        miniStats.innerHTML = '<p style="grid-column:1/-1;color:var(--muted);margin:0;">No tests taken yet. Start an exam above to see your stats here.</p>';
+      } else {
+        let html = `<div class="mini-stat"><div class="val">${stats.totalTests}</div><div class="lbl">Tests taken</div></div>`;
+        Object.keys(stats.byLanguage).forEach(lang => {
+          const b = stats.byLanguage[lang];
+          html += `<div class="mini-stat"><div class="val">${b.bestSpeed}</div><div class="lbl">${lang} best WPM</div></div>`;
+        });
+        miniStats.innerHTML = html;
+      }
+    } else if (miniStats) {
+      miniStats.innerHTML = '<p style="grid-column:1/-1;color:var(--muted);margin:0;">Start an exam above to see your stats here.</p>';
+    }
+  });
+  </script>
+
+  <script>
+  /* ============================================================
+     Exam strip: every exam type appears ONCE inside a real <marquee>
+     that moves left to right. No scroll bar; hover / keyboard focus
+     pauses it so a card can be clicked.
+     ============================================================ */
+  (function () {
+    var E = window.SmartechExercises, T = window.SmartechTests;
+    var box = document.getElementById("dxMarquee"), track = document.getElementById("dxTrack");
+    if (!E || !T || !box || !track) return;
+    var esc = T.esc, loading = true;
+    var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function langsOf(t, exs) {
+      if (t.langs && t.langs.length) return t.langs;
+      var out = [];
+      (exs || []).forEach(function (e) { if (e.lang && out.indexOf(e.lang) === -1) out.push(e.lang); });
+      if (!out.length && t.lang) out.push(t.lang);
+      return out;
+    }
+
+    function statusOf(t, langs) {
+      if (T.followsLanguage(t)) {
+        var ok = langs.filter(function (L) { return T.langUnlocked(t, L); });
+        return ok.length ? { cls: "open", label: "Free \u00B7 " + ok.join(" + ") + " activated" }
+                         : { cls: "lock", label: "Activate " + (langs.join(" / ") || "a language") };
+      }
+      if (!T.needsCode(t)) return { cls: "free", label: "Free" };
+      if (T.isUnlocked(t)) {
+        var d = (typeof getActivationInfo === "function") ? getActivationInfo(t.code).daysLeft : null;
+        return { cls: "open", label: d === null || d === undefined ? "Unlocked" : d + (d === 1 ? " day left" : " days left") };
+      }
+      var inf = (typeof getActivationInfo === "function") ? getActivationInfo(t.code) : {};
+      return { cls: "lock", label: inf.expired ? "Expired" : "Code needed" };
+    }
+
+    function card(t) {
+      var exs = E.testExercises(t.id), langs = langsOf(t, exs), st = statusOf(t, langs);
+      var a = document.createElement("a");
+      a.className = "dx-exam";
+      a.href = "testexercises.html?id=" + encodeURIComponent(t.id);
+      var rule = langs.length > 1
+        ? langs.map(function (L) { var r = T.ruleFor(t, L); return esc(L) + ": " + esc(r.minutes) + " min"; }).join(" &middot; ") + "<br>" +
+          esc(T.summary(t).replace(/^\d+(\.\d+)? min \u00B7 /, ""))
+        : esc(T.summary(t).replace(/^\d+(\.\d+)? min \u00B7 /, ""));
+      a.innerHTML =
+        "<h3>" + esc(t.name) + "</h3>" +
+        '<div class="dx-pills">' + langs.map(function (L) { return '<span class="dx-pill">' + esc(L) + "</span>"; }).join("") +
+          '<span class="dx-pill time">' + esc(t.minutes) + " min</span></div>" +
+        '<div class="dx-rule">' + rule + "</div>" +
+        '<div class="dx-exam-foot"><span class="dx-status ' + st.cls + '">' + esc(st.label) + '</span><span class="dx-go">Start &rarr;</span></div>';
+      return a;
+    }
+
+    function render() {
+      var tests = (E.tests() || []).filter(function (t) { return t.active !== false; });
+      if (!tests.length) {
+        track.innerHTML = '<div class="dx-empty">' + (loading ? "Loading exams\u2026"
+          : (navigator.onLine === false ? "You are offline. Connect to the internet once so the exams can download."
+                                         : "No exams are available yet. Ask your institute to add them.")) + "</div>";
+        if (box.stop) box.stop();
+        return;
+      }
+      track.innerHTML = "";
+      tests.forEach(function (t) { track.appendChild(card(t)); });   // each exam exactly once
+      if (box.start) { if (reduce) box.stop(); else box.start(); }
+    }
+
+    box.addEventListener("focusin", function () { if (box.stop) box.stop(); });
+    box.addEventListener("focusout", function () { if (box.start && !reduce) box.start(); });
+
+    render();
+    E.refresh().then(function () { loading = false; render(); });
+  })();
+  </script>
+
+  <script>
+  /* ============================================================
+     Smartech Typing Tutor — Home Page Script
+     (Rewritten for clarity; was minified/obfuscated. Also removes
+     references to a login modal and GOOGLE_APP_URL that no longer
+     exist in this page and were throwing silent errors.)
+     ============================================================ */
+
+  // ---- Rotating motivational quote ----
+  const quotes = [
+    "Every word you type is a step closer to success.",
+    "Practice is the key to perfection.",
+    "Consistency turns beginners into champions.",
+    "The keyboard is your instrument — play it daily."
+  ];
+  let qIndex = 0;
+  const quoteBox = document.getElementById('quoteBox');
+  function showQuote() {
+    if (!quoteBox) return;
+    quoteBox.style.transition = 'opacity .4s ease';
+    quoteBox.style.opacity = 0;
+    setTimeout(() => {
+      quoteBox.innerText = quotes[qIndex];
+      quoteBox.style.opacity = 1;
+      qIndex = (qIndex + 1) % quotes.length;
+    }, 400);
+  }
+  showQuote();
+  setInterval(showQuote, 10000);
+
+  // ---- Secret shortcut: type "manage" anywhere on the dashboard to
+  // open/close the Manage Exercises panel below. Ignored while focus is
+  // in a text field, so it never interferes with typing elsewhere on
+  // the page. ----
+  (function () {
+    const TRIGGER = "manage";
+    let buffer = "";
+    document.addEventListener("keydown", (e) => {
+      const tag = (document.activeElement && document.activeElement.tagName) || "";
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      if (e.key.length !== 1) return; // ignore Shift, Enter, Tab, etc.
+      buffer = (buffer + e.key.toLowerCase()).slice(-TRIGGER.length);
+      if (buffer === TRIGGER) {
+        const panel = document.getElementById("typing-importance");
+        if (panel) {
+          const opening = panel.style.display === "none";
+          panel.style.display = opening ? "block" : "none";
+          if (opening) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        buffer = "";
+      }
+    });
+  })();
+
+  // ---- Exercise manager ----
+  // The exercise lists themselves are handled by exercises.js (GitHub file,
+  // cached on the device). This panel only manages the download and any
+  // extra exercises added on this computer, which survive every re-download.
+  const MODE_LABEL = { both: 'Chunk + Long', chunk: 'Chunk only', paragraph: 'Long only' };
+
+  function escapeHTML(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function renderCustomExercises() {
+    const info = document.getElementById('exerciseSourceInfo');
+    if (info) {
+      info.textContent = 'Downloaded from GitHub: ' + SmartechExercises.remoteCount() + ' exercises.';
+    }
+    const container = document.getElementById('exerciseListCustom');
+    if (!container) return;
+    const list = SmartechExercises.custom.list();
+    container.innerHTML = list.map((ex, i) => `
+        <div class="card">
+          <b>${i + 1}. ${escapeHTML(ex.title)}</b> <small>(${escapeHTML(ex.lang)} - ${MODE_LABEL[ex.mode] || MODE_LABEL.both})</small>
+          <p>${escapeHTML((ex.text || '').slice(0, 100))}...</p>
+          <button class="delete-btn" data-index="${i}">Delete</button>
+        </div>`).join('');
+
+    container.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', () => deleteExercise(Number(btn.dataset.index)));
+    });
+  }
+
+  function addExercise() {
+    const lang = document.getElementById('exerciseLang').value;
+    const mode = document.getElementById('exerciseMode').value;
+    const titleEl = document.getElementById('exerciseTitle');
+    const textEl = document.getElementById('exerciseText');
+    const title = titleEl.value.trim();
+    const text = textEl.value.trim();
+    if (!title || !text) return alert('Both fields required');
+
+    SmartechExercises.custom.add({ lang, mode, title, text });
+    titleEl.value = '';
+    textEl.value = '';
+    renderCustomExercises();
+  }
+
+  function deleteExercise(index) {
+    SmartechExercises.custom.remove(index);
+    renderCustomExercises();
+  }
+
+  function deleteAllExercises() {
+    SmartechExercises.custom.clear();
+    renderCustomExercises();
+  }
+
+  async function loadExercisesFromUrl() {
+    const urlInput = document.getElementById('exerciseFileUrl');
+    const url = urlInput ? urlInput.value.trim() : '';
+    if (!url) return alert('Please enter a valid file URL!');
+    const ok = await SmartechExercises.refresh({ force: true, url });
+    if (!ok) return alert('❌ Failed to load exercises. Check your URL or file format.');
+    renderCustomExercises();
+  }
+
+  function loadExercisesFromFile() {
+    const fileInput = document.getElementById('exerciseFile');
+    if (!fileInput || !fileInput.files || !fileInput.files[0]) return alert('Select a file first');
+    const reader = new FileReader();
+    reader.onload = e => {
+      const added = SmartechExercises.custom.importText(e.target.result || '');
+      if (!added) alert('No exercises found. Each one needs a header like "### English" followed by the text between two --- lines.');
+      renderCustomExercises();
+    };
+    reader.readAsText(fileInput.files[0], 'utf-8');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlInput = document.getElementById('exerciseFileUrl');
+    if (urlInput) urlInput.value = SmartechExercises.getSourceUrl();
+    renderCustomExercises();
+    SmartechExercises.refresh().then(renderCustomExercises);
+    loadLeaderboard();
+  });
+
+  // Basic copy-protection for this commercial software (kept from the
+  // original app). This is a UX deterrent only, not real security.
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('keydown', e => {
+    if (
+      e.key === 'F12' ||
+      (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase()))
+    ) {
+      e.preventDefault();
+      return false;
+    }
+  });
+  // Cards render immediately — no scroll-triggered reveal (the hero
+  // already gets its one entrance animation via CSS above).
+
+  async function loadLeaderboard() {
+
+    const status = document.getElementById("leaderboardStatus");
+    const table = document.getElementById("leaderboardTable");
+    const body = document.getElementById("leaderboardBody");
+
+    if (!window.SmartechSheet || !SmartechSheet.isConfigured()) {
+        status.textContent = "Leaderboard unavailable.";
+        return;
+    }
+
+    try {
+
+        const data = await SmartechSheet.getTodayLeaderboard();
+
+        const list = Array.isArray(data.sample) ? data.sample : [];
+
+        if (!list.length) {
+            status.textContent = "No qualified students today.";
+            return;
+        }
+
+        status.style.display = "none";
+        table.style.display = "table";
+
+        const rankBadge = (i) => {
+            const rankClass = i < 3 ? ` rank-${i + 1}` : "";
+            return `<span class="rank-badge${rankClass}">${i + 1}</span>`;
+        };
+
+        body.innerHTML = list.map((s, i) => `
+            <tr>
+                <td>${rankBadge(i)}</td>
+                <td>${escapeHTML(s.name)}</td>
+                <td>${escapeHTML(s.language)}</td>
+                <td>${s.speed} WPM</td>
+                <td>${s.accuracy}%</td>
+            </tr>
+        `).join("");
+
+    } catch (err) {
+        console.error(err);
+        status.textContent = "Unable to load leaderboard.";
+    }
+
+  }
+  </script>
+
+</div>
+</body>
+</html>

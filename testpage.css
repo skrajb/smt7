@@ -1,0 +1,298 @@
+/* ============================================================
+   Smartech Typing Tutor - premium speed-test surface
+   Used by testpage.html (Chunk) and paragraph.html (Long Paragraph).
+   Typing boxes stay white/black on purpose (accuracy needs high
+   contrast); everything around them follows the active theme.
+   Timer colours: idle = neutral, running = calm, last 2 min = amber,
+   last 1 min = red + gentle pulse, finished = grey.
+   ============================================================ */
+
+/* Language typography. Set on <html> so the results and error tables get it too.
+   Nirmala UI first for Punjabi/Hindi: it renders cleanly; Raavi/Mangal only as
+   Windows 7 fallbacks (they look thin and jagged at this size). */
+:root { --tt-font: Arial, Helvetica, sans-serif; --tt-size: 1.3rem; --tt-lh: 1.85; --tt-box: clamp(190px, 28vh, 300px); }
+:root[data-tt-lang="pa"] { --tt-font: "Nirmala UI", "Raavi", "Noto Sans Gurmukhi", Arial, sans-serif; --tt-size: 1.38rem; --tt-lh: 2; --tt-box: clamp(230px, 34vh, 360px); }
+:root[data-tt-lang="hi"] { --tt-font: "Nirmala UI", "Mangal", "Noto Sans Devanagari", Arial, sans-serif; --tt-size: 1.4rem; --tt-lh: 2.05; --tt-box: clamp(230px, 34vh, 360px); }
+/* Results: Original / Typed text tables are shown smaller than the typing boxes.
+   Change these three pairs to make them bigger or smaller. */
+:root { --tt-res-size: 0.95rem; --tt-res-lh: 1.65; }
+:root[data-tt-lang="pa"] { --tt-res-size: 1.05rem; --tt-res-lh: 1.8; }
+:root[data-tt-lang="hi"] { --tt-res-size: 1.08rem; --tt-res-lh: 1.85; }
+:root[data-tt-lang="pa"] body, :root[data-tt-lang="hi"] body { text-rendering: optimizeLegibility; font-kerning: normal; }
+:root[data-tt-lang="pa"] .tt-lang strong, :root[data-tt-lang="hi"] .tt-lang strong { font-family: var(--tt-font); font-weight: 700; }
+
+main.container.test-shell {
+  background: #FFFAAE;
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--gold);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 24px 30px 28px;
+}
+
+.test-shell #test-section > br { display: none; }
+
+/* ---------- top bar: language, timer, live counters ---------- */
+.tt-hud {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px;
+  padding: 12px 16px; border: 1px solid var(--border); border-radius: 16px;
+  background: linear-gradient(135deg, var(--gold-soft), transparent 65%), var(--card);
+}
+.tt-lang { display: flex; align-items: center; gap: 12px; margin-right: auto; }
+.tt-mark {
+  width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 1.25rem; font-weight: 800; color: var(--ink);
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  box-shadow: 0 4px 10px rgba(184, 134, 46, 0.3);
+  font-family: Arial, "Raavi", "Mangal", "Nirmala UI", sans-serif;
+}
+.tt-lang strong { display: block; font-family: var(--font-heading); font-size: 1.05rem; color: var(--ink); line-height: 1.2; }
+.tt-lang span { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.tt-timewrap { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.tt-time { display: flex; align-items: center; gap: 8px; }
+.tt-time label { font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.tt-time select {
+  padding: 7px 12px; border-radius: 999px; border: 1.5px solid var(--border);
+  background: #fff; color: var(--ink); font-weight: 700; font-size: 13px;
+}
+.tt-time select:disabled { opacity: .55; cursor: not-allowed; }
+
+.test-shell #timer {
+  display: inline-flex !important; align-items: center; gap: 9px; width: auto;
+  padding: 8px 20px; border-radius: 999px; font-size: 1.4rem; font-weight: 800; letter-spacing: .02em;
+  font-variant-numeric: tabular-nums; color: var(--ink); background: var(--bg);
+  border: 1.5px solid var(--border); transition: color .3s, background .3s, border-color .3s;
+}
+.test-shell #timer::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
+.test-shell[data-state="run"] #timer { border-color: var(--accent); }
+.test-shell[data-state="run"] #timer::before { background: var(--green, #198754); }
+.test-shell[data-state="warn"] #timer { color: #92400e; background: #fef3c7; border-color: #f59e0b; }
+.test-shell[data-state="warn"] #timer::before { background: #f59e0b; }
+.test-shell[data-state="crit"] #timer { color: #b91c1c; background: #fee2e2; border-color: #ef4444; animation: ttPulse 1.2s ease-in-out infinite; }
+.test-shell[data-state="crit"] #timer::before { background: #ef4444; }
+.test-shell[data-state="done"] #timer { color: var(--muted); }
+
+.tt-stats { display: flex; }
+.tt-stat { display: flex; flex-direction: column; align-items: center; min-width: 78px; padding: 2px 14px; border-left: 1px solid var(--border); }
+.tt-stat strong { font-size: 1.2rem; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
+.tt-stat span { font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.tt-hint { flex-basis: 100%; font-size: 12.5px; color: var(--muted); }
+.test-shell:not([data-state="idle"]) .tt-hint { display: none; }
+
+.tt-bar { height: 5px; border-radius: 99px; background: var(--border); overflow: hidden; margin: 10px 2px 0; }
+.tt-bar > i { display: block; height: 100%; width: 100%; background: var(--accent); transition: width .9s linear, background .3s; }
+.test-shell[data-state="warn"] .tt-bar > i { background: #f59e0b; }
+.test-shell[data-state="crit"] .tt-bar > i { background: #ef4444; }
+.test-shell[data-state="done"] .tt-bar > i { background: var(--muted); }
+
+.test-shell #current-chunk { margin: 12px 0 0; text-align: left; }
+.test-shell #current-chunk center {
+  display: inline-block; padding: 4px 13px; border-radius: 999px; background: var(--gold-soft);
+  color: var(--ink); font-size: 12.5px; font-weight: 700; font-family: var(--font-body);
+}
+
+/* ---------- reference + typing boxes ---------- */
+.test-shell #test-area b {
+  display: flex; align-items: center; gap: 8px; margin: 16px 0 2px;
+  font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+}
+.test-shell #test-area b::before { content: ""; width: 14px; height: 3px; border-radius: 3px; background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+.test-shell .reference-outer,
+.test-shell .typing-input {
+  height: var(--tt-box); background: #fff; color: #111; border-width: 1.5px;
+  font-size: var(--tt-size); line-height: var(--tt-lh); box-shadow: var(--shadow-sm);
+}
+.test-shell .reference-outer { border-left: 4px solid var(--gold); }
+.test-shell #typing-input, .test-shell #paragraph, .test-shell .reference-outer, .test-shell .reference-outer * { font-family: var(--tt-font) !important; }
+.test-shell .typing-input { caret-color: var(--accent); transition: border-color .2s, box-shadow .2s; }
+.test-shell .typing-input:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgba(184, 134, 46, 0.22), var(--shadow-sm); }
+.test-shell .typing-input:disabled { background: #f3f4f6; }
+
+/* ---------- action bar ---------- */
+.tt-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border); }
+.tt-actions > div { margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap; }
+.test-shell .secondary-btn, #results .secondary-btn { margin-right: 0; border-radius: 999px; padding: 10px 18px; }
+.test-shell .primary-btn, .popup .primary-btn {
+  background: linear-gradient(135deg, var(--gold-light), var(--gold)); color: var(--ink);
+  border-radius: 999px; padding: 11px 28px; letter-spacing: .02em; box-shadow: 0 8px 18px rgba(184, 134, 46, 0.28);
+  transition: transform .15s, filter .15s;
+}
+.test-shell .primary-btn:hover, .popup .primary-btn:hover { filter: brightness(1.06); transform: translateY(-1px); }
+
+/* ---------- results + popups ---------- */
+#results {
+  width: 92%; max-width: 1100px; margin: 28px auto; padding: 24px 30px; background: var(--card);
+  border: 1px solid var(--border); border-top: 3px solid var(--gold); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+}
+#results h2 { margin: 0 0 14px; font-family: var(--font-heading); color: var(--ink); }
+#results-table { border-collapse: separate !important; border-spacing: 0; border: 1px solid var(--border) !important; border-radius: 14px; overflow: hidden; }
+#results-table th { background: var(--ink); color: #fff; text-align: left; padding: 11px 16px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+#results-table td { padding: 10px 16px; border-top: 1px solid var(--border); }
+#results-table tbody tr:nth-child(even) td { background: var(--bg); }
+#results-table td:first-child { width: 38%; font-weight: 700; color: var(--muted); }
+#time-over-popup p, #no-input-popup p { margin: 0 0 16px; font-weight: 700; font-size: 1.05rem; color: var(--ink); }
+
+@keyframes ttPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, .35); } 50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); } }
+@media (prefers-reduced-motion: reduce) { .test-shell #timer { animation: none !important; } .tt-bar > i { transition: none; } }
+@media (max-width: 760px) {
+  main.container.test-shell { padding: 18px 16px 22px; }
+  .tt-stats { width: 100%; justify-content: space-between; }
+  .tt-stat { flex: 1; border-left: 0; }
+  .tt-actions > div { margin-left: 0; width: 100%; }
+}
+
+/* ================= v2: buttons, highlight, history, time-over ================= */
+/* test-time segmented control */
+.tt-seg { display: inline-flex; gap: 2px; padding: 3px; border-radius: 999px; background: var(--bg); border: 1.5px solid var(--border); }
+.tt-seg button { border: 0; background: transparent; padding: 6px 16px; border-radius: 999px; font-weight: 700; font-size: 13px; color: var(--muted); cursor: pointer; transition: background .15s, color .15s; }
+.tt-seg button:hover:not(:disabled):not(.on) { background: var(--gold-soft); color: var(--ink); }
+.tt-seg button.on { background: var(--ink); color: #fff; box-shadow: 0 3px 8px rgba(11, 30, 54, .25); }
+.tt-seg button:disabled { cursor: not-allowed; opacity: .6; }
+.tt-time select { display: none; }
+
+/* backspace switch */
+.test-shell .toggle-btn { display: inline-flex; align-items: center; gap: 10px; margin: 0; padding: 7px 14px 7px 8px; border-radius: 999px; background: var(--bg); color: var(--text); border: 1.5px solid var(--border); font-weight: 600; font-size: 13px; cursor: pointer; transition: background .2s, border-color .2s; }
+.tg-track { position: relative; flex: none; width: 38px; height: 22px; border-radius: 99px; background: #cbd5e1; transition: background .2s; }
+.tg-track i { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .3); transition: transform .2s; }
+.tg-state { padding: 2px 9px; border-radius: 99px; font-size: 11px; font-weight: 800; font-style: normal; letter-spacing: .06em; background: #e2e8f0; color: var(--muted); }
+.test-shell .toggle-btn.active { background: #fff5f3; border-color: var(--danger); color: var(--danger-dark); }
+.toggle-btn.active .tg-track { background: var(--danger); }
+.toggle-btn.active .tg-track i { transform: translateX(16px); }
+.toggle-btn.active .tg-state { background: var(--danger); color: #fff; }
+.test-shell button:focus-visible, .popup button:focus-visible { outline: 3px solid rgba(184, 134, 46, .45); outline-offset: 2px; }
+
+/* key hint */
+.tt-keys { margin-top: 8px; font-size: 12.5px; color: var(--muted); }
+.tt-keys kbd { display: inline-block; padding: 1px 7px; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 6px; background: #fff; font: 700 11.5px Arial, sans-serif; color: var(--ink); }
+
+/* error highlight (results) */
+#error-section { margin-top: 22px; }
+.tt-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin: 0 0 12px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); font-size: 12.5px; color: var(--muted); }
+.tt-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.tt-legend i { width: 14px; height: 14px; border-radius: 4px; }
+.lg-ok { background: #d9f2e4; box-shadow: inset 0 0 0 1.5px var(--green); }
+.lg-bad { background: #fde8e4; box-shadow: inset 0 -3px 0 var(--danger); }
+.lg-fix { background: #e8efff; box-shadow: inset 0 0 0 1.5px var(--accent); }
+.lg-skip { background: #fff4d6; box-shadow: inset 0 0 0 1.5px #d99a1c; }
+.error-table { width: 100%; table-layout: fixed; border-collapse: separate !important; border-spacing: 0; border: 1px solid var(--border) !important; border-radius: 14px; overflow: hidden; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
+.error-table th { padding: 10px 16px; text-align: left; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #fff; background: linear-gradient(135deg, var(--ink), var(--ink-700)); border: 0; }
+.error-table td { padding: 12px 14px; vertical-align: top; background: #fff; color: #111; border: 0; font-family: var(--tt-font); font-size: var(--tt-res-size); line-height: var(--tt-res-lh); overflow-wrap: anywhere; }
+.error-table td + td, .error-table th + th { border-left: 1px solid var(--border); }
+.error-table .correct { color: #0f6b3f; }
+.error-table .wrong { padding: 1px 6px; border-radius: 6px; background: #fde8e4; color: #a9371f; font-weight: 400; box-shadow: inset 0 -2px 0 var(--danger); }
+.error-table .wrong u, .error-table .wrong del { color: inherit; }
+.error-table .wrong[data-extra-word] { box-shadow: none; }
+.error-table td + td .given { padding: 1px 6px; border-radius: 6px; background: #e8efff; color: #1e45a8; }
+.error-table td + td .given[data-error-type="skip"] { background: #fff4d6; color: #8a5a00; }
+.error-table td:first-child .given { color: #111; }
+
+/* history table + buttons in results */
+#saved-stats-container h3 { font-family: var(--font-heading); color: var(--ink); }
+.stats-history-table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; font-size: 13.5px; }
+.stats-history-table th { padding: 10px 12px; border: 0; text-align: left; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: #fff; background: var(--ink); }
+.stats-history-table td { padding: 9px 12px; border: 0; border-top: 1px solid var(--border); }
+.stats-history-table tbody tr:nth-child(even) td { background: var(--bg); }
+.demo-result { display: inline-block; padding: 2px 10px; border-radius: 99px; font-size: 12px; font-weight: 700; color: var(--ink); background: var(--gold-soft); }
+.pass-result, .fail-result { display: inline-block; padding: 2px 10px; border-radius: 99px; font-size: 12px; }
+.pass-result { background: #d9f2e4; }
+.fail-result { background: #fde8e4; }
+#saved-stats-container .small-btn { margin-top: 10px; padding: 8px 18px; border-radius: 999px; background: #fff; color: var(--danger-dark); border: 1.5px solid var(--danger); box-shadow: none; font-weight: 700; }
+#saved-stats-container .small-btn:hover { background: var(--danger); color: #fff; }
+
+/* time-over notice (results open automatically) */
+#time-over-popup .popup-inner { min-width: 320px; padding: 30px 34px; }
+.tt-clock { width: 60px; height: 60px; margin: 0 auto 10px; border-radius: 50%; display: grid; place-items: center; font-size: 1.8rem; background: #fee2e2; box-shadow: 0 0 0 8px rgba(239, 68, 68, .12); }
+#time-over-popup h3 { margin: 0 0 4px; font-family: var(--font-heading); font-size: 1.4rem; color: #b91c1c; }
+#time-over-popup .popup-inner::after { content: ""; display: block; height: 4px; margin: 0 0 18px; order: 9; border-radius: 4px; background: linear-gradient(90deg, var(--gold), var(--gold-light)); transform-origin: left; animation: ttFill 1.5s linear forwards; }
+#time-over-popup p { margin: 0 0 14px; }
+@keyframes ttFill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* ================= v3: fit-to-screen test view =================
+   While a test is on screen, the page is exactly one window tall and never
+   scrolls: the top bar, labels, action buttons and Submit are always in view,
+   and the Reference and Typing boxes share whatever height is left (so they
+   grow on big screens and shrink on small ones). testpage-ui.js adds the
+   class "tt-results" on <html> once results are shown; then the page scrolls
+   normally again, as results can be long.
+   Tune: --tt-min (smallest a text box may get) and the two paddings below. */
+
+/* page frame (testpage.html and paragraph.html) */
+html:not(.tt-results),
+html:not(.tt-results) body { height: 100%; overflow: hidden; }
+html:not(.tt-results) body { min-height: 0; }
+html:not(.tt-results) .layout { height: 100%; min-height: 0; }
+.layout > .main { padding: 0; }                       /* header sits flush, same on both pages */
+html:not(.tt-results) .main {
+  display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; min-height: 0;
+}
+
+/* compact page heading on test pages (title, exercise pill, Dashboard button) */
+.app-page-head { flex: none; min-height: 0; padding-top: 9px; padding-bottom: 9px; }
+@media (max-height: 800px) {
+  .app-page-head .aph-sub { display: none; }          /* the one-line description is the first thing to go */
+  #menuToggle { top: 10px; }
+}
+@media (min-height: 801px) { .app-page-head { min-height: 72px; } }
+
+/* the test card fills what is left under the heading */
+html:not(.tt-results) main.container.test-shell {
+  flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column;
+  width: calc(100% - 40px); max-width: 1100px; margin: 10px auto 12px;
+  padding: 12px 22px 14px;
+  overflow-y: auto;                                   /* safety net only: tiny window or 200% zoom */
+}
+html.tt-results main.container.test-shell { display: none; }   /* no empty yellow card under the results */
+
+/* script.js re-sets display:block on these when a test restarts, so the flex
+   display is asserted here, except while script.js has them hidden */
+html:not(.tt-results) .test-shell #test-section:not([style*="none"]),
+html:not(.tt-results) .test-shell #test-area:not([style*="none"]) {
+  display: flex !important; flex-direction: column;
+}
+.test-shell #test-section, .test-shell #test-area { flex: 1 1 auto; }
+
+/* top bar: one tight row */
+.test-shell .tt-hud { flex: none; padding: 8px 14px; gap: 8px 16px; border-radius: 14px; }
+.test-shell .tt-mark { width: 38px; height: 38px; font-size: 1.15rem; }
+.test-shell #timer { padding: 5px 18px; font-size: 1.3rem; }
+.test-shell .tt-stats { flex: none; }
+.test-shell .tt-stat { padding: 0 12px; }
+.test-shell .tt-bar { flex: none; margin: 8px 2px 0; }
+/* the "timer starts..." hint sits beside the Typing Text label (see testpage-ui.js).
+   Once the test starts it is hidden with visibility (not display), so nothing jumps while typing */
+.test-shell .tt-label-row .tt-hint { flex: 1 1 auto; min-width: 0; margin: 0 0 0 6px; font-size: 12px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.test-shell:not([data-state="idle"]) .tt-label-row .tt-hint { display: block; visibility: hidden; }
+.test-shell .tt-stat { min-width: 70px; }
+@media (max-width: 1180px) {                          /* keep the top bar on one row in narrow windows */
+  .test-shell .tt-time label { display: none; }
+  .test-shell .tt-stat { min-width: 62px; padding: 0 9px; }
+  .test-shell .tt-hud { gap: 8px 12px; }
+}
+
+/* label rows: "Reference Text" + chunk pill, "Typing Text" + key hint */
+.test-shell .tt-label-row { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 8px 0 4px; min-height: 24px; }
+.test-shell #test-area .tt-label-row b { margin: 0; flex: none; white-space: nowrap; }
+.test-shell .tt-label-row #current-chunk { margin: 0; flex: none; white-space: nowrap; }
+.test-shell .tt-label-row .tt-keys { margin: 0; font-size: 12px; flex: none; white-space: nowrap; }   /* the hint gives way first */
+.test-shell #test-area > .tt-label-row:first-child { margin-top: 2px; }
+
+/* the two text boxes share the remaining height */
+html:not(.tt-results) .test-shell .reference-outer,
+html:not(.tt-results) .test-shell .typing-input {
+  height: auto; flex: 1 1 0; margin: 0; padding: 10px 16px;
+  min-height: calc(var(--tt-size) * var(--tt-lh) * 2 + 20px);   /* never less than two lines */
+}
+
+/* buttons row */
+.test-shell .tt-actions { flex: none; margin-top: 10px; padding-top: 10px; }
+.test-shell .secondary-btn { padding: 9px 18px; }
+.test-shell .primary-btn { padding: 10px 26px; }
+
+/* tall screens: a little more air */
+@media (min-height: 860px) {
+  html:not(.tt-results) main.container.test-shell { margin: 14px auto 18px; padding: 16px 26px 18px; }
+  .test-shell .tt-hud { padding: 10px 16px; }
+  .test-shell .tt-label-row { margin-top: 12px; }
+  html:not(.tt-results) .test-shell .reference-outer,
+  html:not(.tt-results) .test-shell .typing-input { padding: 14px 18px; }
+}

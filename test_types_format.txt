@@ -1,0 +1,146 @@
+Smartech Typing Tutor - how to add TEST TYPES + their exercises (paste into your GitHub exercise file)
+Anything above the first ### line is ignored. Keep your existing exercises exactly as they are.
+
+=====================  1) DEFINE A TEST TYPE  =====================
+### TEST CHSL-ENG
+name: SSC CHSL English
+language: English
+mode: paragraph
+minutes: 10
+wpm: 35
+accuracy: 93
+basis: gross
+code: CHSL
+description: 10-minute English passage test as per SSC CHSL.
+note: General/UR category cut-off. Always confirm figures in the official notification.
+
+### TEST CGL-ENG
+name: SSC CGL English (DEST)
+language: English
+mode: paragraph
+minutes: 15
+chars: 2000
+accuracy: 93
+code: CGL
+
+### TEST PSSSB-PBI
+name: PSSSB Punjabi
+language: Punjabi
+mode: chunk
+minutes: 10
+wpm: 30
+accuracy: 92
+code: PSSSB
+
+### TEST TRIAL
+name: Free Trial Test
+minutes: 5
+wpm: 20
+accuracy: 85
+code: FREE      (no test code; each language opens only if that language is activated: ENG -> English, PBI -> Punjabi, HIN -> Hindi. Use code: OPEN for no activation at all)
+
+=====================  2) MARK EXERCISES FOR A TEST  =====================
+Put @ID in the exercise header. Tagged exercises appear ONLY inside that test.
+
+### English @CHSL-ENG Passage 1
+---
+Replace this with the CHSL English passage 1 ...
+---
+
+### English @CHSL-ENG @CGL-ENG Passage 2 (used by two tests)
+---
+Replace this with a passage that serves both tests ...
+---
+
+### @PSSSB-PBI Punjabi Set 1
+---
+ਇੱਥੇ ਪੰਜਾਬੀ ਅਭਿਆਸ ਲਿਖੋ।
+---
+
+### English @TRIAL Warm-up
+---
+Free trial text ...
+---
+
+=====================  3) ONE TEST WITH ENGLISH + PUNJABI  =====================
+List both languages in "language:". The Test Centre card and the exercise page then show
+English and Punjabi as two separate blocks (each with its own time, pass rule and exercise
+numbering starting at 1). Optional own rule per language: <language>-wpm / -chars / -accuracy /
+-minutes. Anything not overridden is taken from the main fields.
+
+### TEST PHC-CLERK
+name: Punjab Haryana High Court Clerk
+language: English, Punjabi
+mode: paragraph
+minutes: 10
+wpm: 35
+accuracy: 95
+punjabi-wpm: 30
+punjabi-accuracy: 92
+code: PHC
+description: Typing test in English and Punjabi.
+
+### English @PHC-CLERK Passage 1
+---
+English passage ...
+---
+
+### Punjabi @PHC-CLERK Passage 1
+---
+ਪੰਜਾਬੀ ਪੈਰਾ ...
+---
+
+=====================  4) PHHC / WORD-BASED TEST (own result engine)  =====================
+A test with  "engine: words"  is NOT calculated on 5 keystrokes = 1 word. It counts the words
+really typed:
+    Typed words  = all words typed
+    Mistakes     = wrong + extra + skipped words + merged/split words ("goodmorning", "to day")
+    Net words    = Typed words - Mistakes
+    Result speed = Net words / minutes            e.g. (typed - mistakes) / 10
+    Pass         = Net words >= required words    e.g. 300 words in 10 minutes (= 30 WPM)
+A test whose ID starts with PHHC uses this engine automatically (add "engine: chars" to opt out).
+No accuracy rule is applied unless you write "accuracy:".
+
+### TEST PHHC
+name: Punjab & Haryana High Court
+language: English
+mode: paragraph
+minutes: 10
+words: 300
+code: PHHC
+description: Result speed = (typed words - mistakes) / 10. Pass: 300 words in 10 minutes.
+
+### English @PHHC Passage 1
+---
+English passage ...
+---
+
+Optional fields for a word-based test:
+  words            minimum NET words in the test time (default 300); or  wpm: 30  (= 300 words in 10 min)
+  basis            net (default) = typed - mistakes must reach the target; gross = typed words only
+  space-mistakes   yes = every extra spacebar press is also a mistake (default no: only shown with a blue mark)
+  case-sensitive   yes = "court" for "Court" is a wrong word (default no, same as the other tests)
+  accuracy         optional extra rule: net words / typed words (default none)
+  <language>-words own words target per language, e.g. punjabi-words: 250
+
+=====================  FIELD GUIDE  =====================
+name         Title on the Test Centre card (default: the ID)
+language     English / Punjabi / Hindi, or several separated by a comma ("English, Punjabi").
+             Each exercise keeps its own language; a multi-language test shows one block per language.
+english-wpm  Optional per-language rule: <language>-wpm, -chars, -accuracy, -minutes
+             (e.g. punjabi-wpm: 30). Not given = the main value is used.
+engine       chars (default) = characters, 5 chars = 1 word | words = PHHC: real typed words (section 4)
+mode         paragraph = long passage page, chunk = chunk page (default paragraph)
+minutes      Test time, fixed for this test (default 10)
+wpm          Minimum speed in words/min (1 word = 5 characters)      } use ONE of
+chars        Minimum characters instead of wpm (e.g. 2000)           } wpm or chars
+accuracy     Minimum accuracy % (default 90)
+basis        gross (default) or net - which character count must reach the speed target
+code         Access-code TYPE in the Google Sheet. FREE = no code. If left out, the
+             test ID itself is the code type (locked by default).
+description  Optional line on the card
+note         Optional line printed under the result
+active       no = hide the test without deleting it
+
+Rules: a test ID may use letters, digits, - and _ (no spaces). Pass = speed target reached
+AND accuracy reached. Tests with the same "code:" share one activation.

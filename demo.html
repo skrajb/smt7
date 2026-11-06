@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" href="icon.ico">
+<meta charset="UTF-8">
+<script src="protect.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5-Minute Demo Test | Smartech Typing Tutor</title>
+<script src="themes.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="themes.css">
+<link rel="stylesheet" href="sidebar.css">
+<style>
+html, body { height: 100%; margin: 0; }
+body { font-family: var(--font-body); background: var(--bg); display: flex; flex-direction: column; min-height: 100vh; }
+
+.demo-wrap { width: 92%; max-width: 1100px; margin: 24px auto 40px; }
+.demo-lead {
+  margin: 0 0 22px; padding: 14px 18px; border: 1px solid var(--border); border-left: 4px solid var(--gold);
+  border-radius: 12px; background: var(--card); color: var(--muted); font-size: 14.5px; line-height: 1.6;
+}
+.demo-lead strong { color: var(--ink); }
+
+.demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+.demo-card {
+  background: var(--card); border: 1px solid var(--border); border-top: 3px solid var(--gold);
+  border-radius: 16px; box-shadow: var(--shadow-md); padding: 22px 20px 20px; text-align: center;
+}
+.demo-badge {
+  width: 52px; height: 52px; margin: 0 auto 10px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--ink); color: #fff; font-size: 1.5rem; font-weight: 800;
+  font-family: "Nirmala UI", "Noto Sans Gurmukhi", "Noto Sans Devanagari", Arial, sans-serif;
+}
+.demo-card h2 { margin: 0 0 4px; border: none; padding: 0; color: var(--ink); font-size: 1.25rem; }
+.demo-card .demo-time { margin: 0 0 16px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.demo-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.demo-list p { margin: 0; color: var(--muted); font-size: 13.5px; }
+
+.exercise-btn {
+  background: var(--ink); color: #fff; border: none; border-radius: 10px; padding: 12px 22px; min-width: 150px;
+  font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: transform .12s ease, background .12s ease;
+}
+.exercise-btn:hover { background: var(--ink-700, var(--ink)); transform: translateY(-2px); }
+
+.demo-note { margin: 18px 2px 0; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+</style>
+
+<!-- SECURITY BLOCK -->
+<script>
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('copy', e => e.preventDefault());
+document.addEventListener('paste', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+    if (e.key === 'F12') e.preventDefault();
+    if (e.ctrlKey && e.shiftKey && e.key === 'I') e.preventDefault();
+    if (e.ctrlKey && e.key === 'u') e.preventDefault();
+    if (e.ctrlKey && e.key === 's') e.preventDefault();
+});
+</script>
+
+<script src="profile.js"></script>
+<script src="sidebar.js"></script>
+</head>
+<body>
+<div class="main">
+
+<button id="menuToggle">&#9776;</button>
+
+<div class="demo-wrap">
+
+  <p class="demo-lead">
+    <strong>How it works:</strong> choose your language and open the demo exercise. You get a full
+    <strong>5-minute</strong> typing test. The timer starts with your first key, and your speed and accuracy
+    appear automatically when time is up.
+  </p>
+
+  <div class="demo-grid">
+    <section class="demo-card">
+      <div class="demo-badge" aria-hidden="true">A</div>
+      <h2>English</h2>
+      <p class="demo-time">5 minutes</p>
+      <div class="demo-list" id="demoEnglish"></div>
+    </section>
+
+    <section class="demo-card">
+      <div class="demo-badge" aria-hidden="true">&#x0A2A;</div>
+      <h2>Punjabi</h2>
+      <p class="demo-time">5 minutes</p>
+      <div class="demo-list" id="demoPunjabi"></div>
+    </section>
+
+    <section class="demo-card">
+      <div class="demo-badge" aria-hidden="true">&#x0905;</div>
+      <h2>Hindi</h2>
+      <p class="demo-time">5 minutes</p>
+      <div class="demo-list" id="demoHindi"></div>
+    </section>
+  </div>
+
+  <p class="demo-note">
+    Demo results are saved in My Progress for 3 days like other tests, but a demo never issues a certificate
+    and is not sent to the leaderboard.
+  </p>
+</div>
+
+<script src="exercises.js"></script>
+<script>
+/* Demo exercises come from the same GitHub exercise file as everything else.
+   In that file a demo is a block whose ### header contains the word "Demo":
+       ### Demo English   /   ### Demo Punjabi   /   ### Demo Hindi            */
+if (window.SmartechExercises) {
+  [["English", "demoEnglish"], ["Punjabi", "demoPunjabi"], ["Hindi", "demoHindi"]].forEach(function (p) {
+    SmartechExercises.mountDemo({ container: p[1], lang: p[0], target: "paragraph.html" });
+  });
+}
+</script>
+
+</div>
+</body>
+</html>

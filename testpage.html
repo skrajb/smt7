@@ -1,0 +1,307 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="protect.js"></script>
+	<link rel="icon" type="image/png" href="icon.ico">
+	<style>
+	.header img {
+    height: 60px;
+}
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: 28px auto;
+    background: #FFFAAE;
+    padding: 30px 32px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+#timer {
+    width: fit-content;
+    background: #fdeceb;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-variant-numeric: tabular-nums;
+}
+#current-chunk {
+    margin: 4px 0 20px;
+}
+#test-area b {
+    display: block;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin: 18px 0 4px;
+}
+#test-area b:first-child { margin-top: 0; }
+	html, body {
+  height: 100%;
+  margin: 0;
+}
+nav { background: var(--ink); padding: 10px 20px;}
+nav ul { list-style: none; margin: 0; padding: 0; display: flex; align-items: center; }
+nav ul li { margin-right: 20px; }
+nav ul li a, nav ul li button { color: white; font-weight: bold; text-decoration: none; background: transparent; border: none; font-size: 16px; cursor: pointer; }
+nav ul li a:hover, nav ul li button:hover { color: var(--ink); }
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Toggle Button Style */
+.toggle-btn {
+  background:var(--muted);
+  color:white;
+  border:none;
+  border-radius:6px;
+  padding:8px 14px;
+  cursor:pointer;
+  margin-top:10px;
+}
+.toggle-btn.active {
+  background:var(--danger);
+}
+
+/* Error highlighting styles (used by highlightErrors() in script.js) */
+.correct {
+  color: var(--green);
+}
+.wrong {
+  color: #ffffff;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-weight: bold;
+}
+.wrong u {
+  text-decoration: underline;
+  color: #ffffff;
+}
+.wrong del {
+  text-decoration: line-through;
+  color: #ffffff;
+}
+.given {
+  color: var(--accent);
+}
+.space-symbol {
+  color: var(--accent-dark);
+  text-decoration: underline;
+  font-weight: 900;
+  padding: 0 3px;
+  margin: 0 1px;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+}</style>
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Typing Practice | Smartech Typing Tutor</title>
+
+<script src="themes.js"></script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="themes.css">
+<link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="testpage.css">
+
+<script src="profile.js"></script>
+<script src="sidebar.js"></script>
+
+
+</head>
+
+<body>
+<div class="main">
+<button id="menuToggle">☰</button>
+
+<!-- ✅ RESULTS SECTION -->
+<section id="results" style="display:none;">
+ 
+
+    <!-- RIGHT: Test Results -->
+    <div style="flex:2; min-width:400px;">
+      <h2>Results</h2>
+      <table id="results-table"  
+             style="display:none; width:100%; border:1px solid black; border-collapse:collapse;">
+        <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Exercise</td><td id="exercise-no-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Total Typed Words</td><td id="w-typed-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Wrong Words</td><td id="w-wrong-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Extra Words (typed, not in passage)</td><td id="w-extra-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Skipped Words</td><td id="w-skipped-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Space Errors</td><td id="w-space-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Total Mistakes</td><td id="w-mistakes-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Net Words (Typed &minus; Mistakes)</td><td id="w-net-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Result Speed</td><td id="w-speed-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Required to Pass</td><td id="w-required-value"></td></tr>
+          <tr data-engine="chars"><td>Gross Characters</td><td id="gross-characters-value"></td></tr>
+          <tr data-engine="chars"><td>Wrong Words</td><td id="wrong-words-value"></td></tr>
+          <tr data-engine="chars"><td>Extra Words (typed, not in passage)</td><td id="extra-words-value"></td></tr>
+          <tr data-engine="chars"><td>Skipped Words</td><td id="skipped-words-value"></td></tr>
+          <tr data-engine="chars"><td>Space Errors</td><td id="space-errors-value"></td></tr>
+          <tr data-engine="chars"><td>Error Characters</td><td id="error-characters-value"></td></tr>
+          <tr data-engine="chars"><td>Net Characters</td><td id="net-characters-value"></td></tr>
+          <tr data-engine="chars"><td>Gross Speed</td><td id="gross-speed-value"></td></tr>
+          <tr data-engine="chars"><td>Actual Gross Speed</td><td id="actual-gross-speed-value"></td></tr>
+          <tr><td>Time Taken</td><td id="time-spent-value"></td></tr>
+          <tr><td>Accuracy</td><td id="accuracy-percentage-value"></td></tr>
+          <tr><td>Backspace Count</td><td id="backspace-count-value"></td></tr>
+          <tr data-engine="words" style="display:none;"><td>Result</td><td id="w-result-value"></td></tr>
+          <tr data-engine="chars"><td>Result</td><td id="result-value"></td></tr>
+          <tr id="notes-section" style="display:none;">
+            <td colspan="2">
+              <div id="results-notes" style="display:none;">
+                <div id="exam-note" style="margin-bottom:5px; color:var(--danger);"></div>
+                <div id="pass-note" style="color:var(--accent);"></div>
+              </div>
+            </td>
+          </tr>
+         
+        </tbody>
+      </table>
+      <div id="error-section" style="margin-top:15px; display:none;">
+        <div class="tt-legend"><span><i class="lg-ok"></i>Correct</span><span><i class="lg-bad"></i>Wrong / extra word</span><span><i class="lg-fix"></i>Correct word</span><span><i class="lg-skip"></i>Skipped</span></div>
+        <div id="error-highlight"></div>
+      </div>
+      <div id="saved-stats-container" style="margin-top:20px;"></div>
+      <div style="margin-top:20px; text-align:right;">
+        <button id="refresh-btn-2" class="secondary-btn" type="button" style="display:none;">Restart Test</button>
+        <button id="practice-another-btn-2" class="secondary-btn" type="button" style="display:none;">New Exercise</button>
+      </div>
+    </div>
+</section>
+<!-- ✅ END RESULTS -->
+
+
+
+
+<main class="container test-shell" data-state="idle">
+<section class="test-section" id="test-section">
+
+
+  <div>
+    <div id="timer">Time: 10:00</div>
+    <div id="current-chunk"><center>Current Chunk - 1</center></div>
+  </div>
+
+  <div id="test-area">
+	  <b>Reference Text</b>
+    <div id="reference-text" class="reference-outer" style="font-size:1.7em">
+      <div id="paragraph" class="paragraph">Loading...</div>
+    </div>
+<b>Typing Text</b>
+    <textarea id="typing-input" placeholder="Start typing here..."
+              rows="4" class="typing-input" spellcheck="false" autofocus style="font-size:1.7em"		></textarea>
+  <!-- Backspace Toggle Button -->
+  <button id="disable-toggle" class="toggle-btn" type="button" aria-pressed="false">
+    <span class="tg-track"><i></i></span><span>Disable Backspace</span><em class="tg-state">OFF</em>
+  </button>
+   <div style="text-align:right;">
+  <button id="refresh-btn" class="secondary-btn" type="button">Restart Test</button>
+  <button id="practice-another-btn" class="secondary-btn" type="button">New Exercise</button>
+  <button id="submit-btn" class="primary-btn">Submit Test</button>
+</div>
+  </div>
+  
+</section>
+</main>
+
+
+<!-- POPUPS -->
+<div id="time-over-popup" class="popup" style="display:none;">
+  <div class="popup-inner">
+    <div class="tt-clock" aria-hidden="true">⏱</div>
+    <h3>Time is up!</h3>
+    <p>Opening your results…</p>
+    <button id="popup-ok-btn" class="primary-btn">View results now</button>
+  </div>
+</div>
+
+<div id="no-input-popup" class="popup" style="display:none;">
+  <div class="popup-inner">
+    <p>No typed input detected.</p>
+    <button id="no-input-ok-btn" class="primary-btn">OK</button>
+  </div>
+</div>
+
+<script src="sheet-sync.js"></script>
+<script src="db.js"></script>
+<script src="wordengine.js"></script>
+<script src="tests.js"></script>
+
+<script src="script.js">
+</script>
+<script src="testpage-ui.js"></script><script src="autoscroll.js"></script><script>
+/* Demo text */
+document.getElementById("paragraph").innerText =
+"Typing practice improves speed and accuracy. Keep your eyes on the screen and maintain proper hand placement.";
+
+/* Elements */
+const typingInput = document.getElementById("typing-input");
+const toggleBtn = document.getElementById("disable-toggle");
+
+let backspaceDisabled = false;
+
+/* Toggle Button Click */
+toggleBtn.addEventListener("click", () => {
+  backspaceDisabled = !backspaceDisabled;
+
+  toggleBtn.classList.toggle("active", backspaceDisabled);
+  toggleBtn.setAttribute("aria-pressed", String(backspaceDisabled));
+  toggleBtn.querySelector(".tg-state").textContent = backspaceDisabled ? "ON" : "OFF";
+});
+
+/* Disable Backspace Logic */
+typingInput.addEventListener("keydown", function(e) {
+  if (backspaceDisabled && e.key === "Backspace") {
+    e.preventDefault();
+  }
+});
+
+
+
+</script>
+</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

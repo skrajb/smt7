@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<script src="protect.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact &amp; Support | Smartech Typing Tutor</title>
+  <script src="themes.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="themes.css">
+<style>
+	html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ===== Header & Nav ===== */
+.header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 15px 40px;
+  animation: fadeDown 1s ease forwards;
+}
+.header img { height: 60px; }
+
+
+/* ===== Hero Section ===== */
+.hero {
+  text-align: center;
+  padding: 60px 10%;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  border-radius: 0 0 28px 28px;
+  animation: fadeUp 1s ease .5s forwards;
+}
+.hero h1 {
+  font-size: 2.5rem;
+  color: #fff;
+}
+.hero p {
+  color: #dbe6ff;
+  font-size: 1.1rem;
+  max-width: 700px;
+  margin: auto;
+}
+
+/* ===== Contact Form ===== */
+.container {
+  animation: fadeUp 1s ease 1s forwards;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+textarea {
+  height: 150px;
+  resize: vertical;
+}
+
+/* ===== Thank You Popup ===== */
+.popup-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: none; justify-content: center; align-items: center;
+  animation: fadeIn .5s ease;
+}
+.popup {
+  background: white;
+  padding: 30px 40px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  transform: scale(0.8);
+  animation: popUp .5s ease forwards;
+}
+.popup img {
+  width: 120px;
+  margin-bottom: 15px;
+}
+.popup h2 {
+  color: var(--ink);
+}
+.popup p {
+  color: #444;
+  font-size: 18px;
+}
+.popup button {
+  background: var(--ink);
+  margin-top: 15px;
+}
+.popup button:hover {
+  background:var(--ink-700);
+  color: white;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeDown {
+  from {opacity:0; transform:translateY(-40px);}
+  to {opacity:1; transform:translateY(0);}
+}
+@keyframes fadeUp {
+  from {opacity:0; transform:translateY(40px);}
+  to {opacity:1; transform:translateY(0);}
+}
+@keyframes fadeIn {
+  from {opacity:0;}
+  to {opacity:1;}
+}
+@keyframes popUp {
+  to { transform: scale(1); opacity: 1; }
+}
+
+@media (max-width:768px){
+  nav ul { flex-direction: column; align-items: center; }
+}
+</style>
+<script>
+        // Prevent right-click
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        }, false);
+
+        // Prevent copy
+        document.addEventListener('copy', function(e) {
+            e.preventDefault();
+            return false;
+        }, false);
+
+        // Prevent paste (except in typing-input)
+        document.addEventListener('paste', function(e) {
+            e.preventDefault();
+            return false;
+        }, false);
+
+        // Prevent developer tools and view source shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Block F12 (Dev Tools)
+            if (e.key === 'F12') {
+                e.preventDefault();
+                return false;
+            }
+            // Block Ctrl+Shift+I (Dev Tools)
+            if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+                e.preventDefault();
+                return false;
+            }
+            // Block Ctrl+U (View Source)
+            if (e.ctrlKey && e.key === 'u') {
+                e.preventDefault();
+                return false;
+            }
+            // Block Ctrl+S (Save Page)
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                return false;
+            }
+        }, false);
+    </script>
+
+
+
+<link rel="stylesheet" href="sidebar.css">
+
+<script src="profile.js"></script>
+<script src="sidebar.js"></script>
+
+
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<div class="main">
+
+<button id="menuToggle">☰</button>
+
+<!-- ===== Hero Section ===== -->
+<section class="hero">
+  <h1>Get in Touch</h1>
+  <p>Questions about a course, activation, or anything else? We'd love to hear from you.</p>
+</section>
+
+<div class="container">
+  <div class="card" style="max-width:560px;margin:-60px auto 0;text-align:center;position:relative;z-index:2;">
+    <h2 style="display:inline-block;">Contact Smartech Education</h2>
+    <p style="color:var(--muted);margin-bottom:22px;">
+      Reach out by email and we'll get back to you as soon as we can.
+    </p>
+    <a href="mailto:smartecheducation@gmail.com" class="btn gold-btn" style="background:var(--accent);color:#fff;display:inline-block;">
+      ✉️ smartecheducation@gmail.com
+    </a>
+    <p style="margin-top:26px;color:var(--muted);font-size:13.5px;">
+      © 2026 Smartech Education Computer Institute — All Rights Reserved.
+    </p>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

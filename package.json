@@ -1,0 +1,51 @@
+{
+  "name": "smartech-typing-tutor",
+  "version": "4.0.0",
+  "description": "Typing practice and speed test software for English, Punjabi and Hindi developed by Smartech Education Computer Institute.",
+  "author": {
+    "name": "Smartech Education Computer Institute, Patiala",
+    "email": "smartecheducation@gmail.com"
+  },
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --x64 --ia32",
+    "build:win7": "electron-builder --win --ia32 -c.electronVersion=22.3.27 -c.directories.output=dist-win7 -c.nsis.artifactName=Smartech-Typing-Tutor-Win7-32bit-Setup-${version}.exe"
+  },
+  "devDependencies": {
+    "electron": "^41.0.3",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "com.smartech.typingtutor",
+    "productName": "Smartech Typing Tutor",
+    "files": [
+      "**/*",
+      "!**/*.bak",
+      "!**/*.gs",
+      "!*.md",
+      "!Smartech Educatation Computer Centre*",
+      "!Type.png",
+      "!_archive/**",
+      "!dist*/**",
+      "!*.py"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "artifactName": "Smartech-Typing-Tutor-Setup-${version}.exe",
+      "license": "license.txt",
+      "shortcutName": "Smartech Typing Tutor",
+      "createStartMenuShortcut": true,
+      "uninstallDisplayName": "Smartech Typing Tutor"
+    },
+    "copyright": "Copyright © 2026 Smartech Education Computer Institute"
+  },
+  "homepage": "mailto:smartecheducation@gmail.com",
+  "license": "UNLICENSED"
+}
